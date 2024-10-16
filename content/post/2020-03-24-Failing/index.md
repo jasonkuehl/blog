@@ -5,11 +5,13 @@ slug: Failing-Is-Learning
 date: 2020-03-24
 image: cover.jpg
 categories:
-    - Example Category
+    - Blog
 tags:
-    - Example Tag
+    - Selfhelp
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
+# Learn By Failing
+
 It happened. You finally landed that next large project, the one that you think will defend all of your decisions leading up to this point. The big one that will redeem all of that hard work during the years leading up to it.
 
 But the fact is that there is no one project that will do that. No one project will ever do that because that’s not how life works. All these projects really are is a way to gain more experience and learn from them.
@@ -18,7 +20,7 @@ Unfortunately and despite the actually reality of the situation, there are many 
 
 What follows are sayings (that negative self-talk) that I have heard from many people in my life. I’m going to write about each and give you ways to help better yourself and give you the confidence you need to succeed. While I am no expert, I hope that this can help at least a few people realize that failure is part of life and one project will not make or break you.
 
-If I fail, I’m going to be fired.
+## If I fail, I’m going to be fired.
 
 I see this a lot especially with new people (Interns, Jrs, and fresh engineers). That being said, I have also seen this with Seniors, but I’ll cover that case as well later.
 
@@ -28,7 +30,7 @@ But you’re new, so of course, you’re afraid to do a lot of things; you need 
 
 If your company is not supportive like this, you need to move on. Nobody needs that negativity in their life. You should never be afraid to fail and your workplace should reflect an attitude of failure is how people learn.
 
-If something fails then clearly someone is to blame
+## If something fails then clearly someone is to blame
 
 Tim broke X or Todd did Y. in reality, rarely are Tim and Todd the issue here. The process is. 99 times out of a 100 something failed because the process wasn’t well defined or was incorrect.
 
@@ -44,7 +46,7 @@ Imposter syndrome is genuine. It doesn’t matter if you’re new to the field o
 
 How do you bust that feeling? Well, everyone has something that helps, but surrounding yourself with a network of people to build you up and remind you that failure just means you are learning is very important. If you don’t have that network of people, you feel like you’re lost at sea with no land around you. You need to build that support structure.
 
-Denial of Mistake Making
+## Denial of Mistake Making
 
 The biggest problem with people and companies is is denying when you have made a mistake, or a project didn’t go as planned. I’ve seen many a ship sink on this iceberg.
 
@@ -60,53 +62,53 @@ So for the most part people’s outlook of the workplace is influenced by what i
 
 Toxic people: They have one goal, suck your life away. They don’t care about you and will only bring you misery. They only care about themselves.
 
-How to ID these kinds of people?
+## How to ID these kinds of people?
 
-    You’re emotionally affected by their drama.
-    You dread (or fear) being around them.
-    You’re exhausted, or you feel angry while you’re with them or after your interaction.
-    You feel bad or ashamed about yourself.
-    You’re stuck in a cycle of trying to rescue, fix, or care for them.
+* You’re emotionally affected by their drama.
+* You dread (or fear) being around them.
+* You’re exhausted, or you feel angry while you’re with them or after your interaction.
+* You feel bad or ashamed about yourself.
+* You’re stuck in a cycle of trying to rescue, fix, or care for them.
 
 The sooner you remove them from your life, the sooner you can work on building up your confidence again.
 
-Toxic Space
+## Toxic Space
 
 If you see these run, don’t look back, and move on. Always remember that you can leave at any time, you don’t owe any company anything.
 
 How to ID these kinds of places?
 
-    You’re told to feel, “lucky you have a job.”…
-    Poor communication. …
-    Everyone has a bad attitude. …
-    There’s always office drama. …
-    Dysfunction reigns. …
-    You have a tyrannical boss. …
-    You feel in your gut that something is off.
+* You’re told to feel, “lucky you have a job.”…
+* Poor communication.
+* Everyone has a bad attitude. …
+* There’s always office drama. …
+* Dysfunction reigns. …
+* You have a tyrannical boss. …
+* You feel in your gut that something is off.
 
 The power of “no” is amazing, and you shouldn’t be afraid to use it. You have a choice, and you know better than all that your priorities are.
 
-Poor Leaders
+## Poor Leaders
 
 Just like toxic people, these are the people who will help drive your future in your career.
 
-    Oppositional behavior
-    Makes you feel terrible for over simple mistakes
-    Plays power politics
-    Doesn’t tech or let you learn
-    Abuse of the disciplinary system
-    bullying, gaslighting, sexists
-    course causes workplace division
+* Oppositional behavior
+* Makes you feel terrible for over simple mistake
+* Plays power politics
+* Doesn’t tech or let you learn
+* Abuse of the disciplinary system
+* bullying, gaslighting, sexists
+* course causes workplace division
 
-What should your leadership actually be doing?
+## What should your leadership actually be doing?
 
-    Seeing a potential vision on your future, asking what you want your future to be, and helping to shape it to meet both of your needs.
-    Giving you an ability to drive your own projects you thought of.
-    Supports you when you need it
-    Being there for you when you need someone to talk to or toss ideas off of.
-    You can tell them no and have a talk about why you said no.
+* Seeing a potential vision on your future, asking what you want your future to be, and helping to shape it to meet both of your needs.
+* Giving you an ability to drive your own projects you thought of.
+* Supports you when you need it
+* Being there for you when you need someone to talk to or toss ideas off of.
+* You can tell them no and have a talk about why you said no.
 
-What Can You Do Right Now
+## What Can You Do Right Now
 
 We’ve talked about what failure types and people who are not supportive and ways to identify them. But what can you do to build your empire and get that reinforcement if it’s not in the workplace and find a place where it is?
 
@@ -116,7 +118,7 @@ Go to fun events: Go to events that look like fun to meet others and build upon 
 
 Start doing fun in field projects: If you really like the work you are doing, start practicing outside of work! To be good at something, it needs to be close to second nature. Start doing in-field projects outside of work or if your work has a “playpen” where you can build and make things use it. Check the areas for a local makerspace, too, as these are great places to find others with your passions.
 
-Conclusion
+## Conclusion
 
 Work and people can be a chore in and of itself. It can trigger anxiety, stress, and feeling of dread some (if not most) days. You need your time to decompress. Maybe that is time with your significant other, playing at a makerspace, out with friends, building a car, writing, drawing, video games; whatever it might be, think about yourself and what you like to do. Whatever your life stress is, think about yourself. Your health is worth more than ending up in the ER because of a panic attack (True Story).
 

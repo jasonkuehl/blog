@@ -1,13 +1,13 @@
 ---
 title: RCN Business Cable Internet Is Not Business Ready
-description: wtf this is about
-slug: WebURL
+description: RCN Business Cable Internet Is Not Business Ready
+slug: RCN-Business-Cable-Internet-Is-Not-Business-Ready
 date: 2022-04-30
 image: cover.jpg
 categories:
-    - Example Category
+    - ISP
 tags:
-    - Example Tag
+    - RCN
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
 Before we start:

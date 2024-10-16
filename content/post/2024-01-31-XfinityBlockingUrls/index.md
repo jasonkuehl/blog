@@ -5,9 +5,9 @@ slug: Xfinity Blocking-URLs-For-No-Reason
 date: 2024-01-31
 image: cover.jpg
 categories:
-    - Example Category
+    - ISP
 tags:
-    - Example Tag
+    - Xfinity
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
 There have been a few instances in which Xfinity has blocked my company’s VPN URL. Xfinity needs a better process for unblocking that URL, but that is a different rant. You can not open tickets with them if you’re not an Xfinity customer. This makes no sense, and it’s infuriating. Xfinity will not tell us why or how the block was triggered. We were told on the 1st and 2nd time it happened it was “a known issue,” and it was resolved, but we’ve had other issues.

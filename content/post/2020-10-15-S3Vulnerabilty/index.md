@@ -1,19 +1,15 @@
 ---
-title: Title of post
-description: wtf this is about
-slug: WebURL
+title: How I Found An S3 Vulnerability
+description: How I Found An S3 Vulnerability
+slug: How-I-Found-An-S3-Vulnerability
 date: 2020-10-13
 image: cover.jpg
 categories:
-    - Example Category
+    - AWS
 tags:
-    - Example Tag
+    - S3
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
-How I Found An S3 Vulnerability.
-Blog patreon Security
-October 15, 2020October 15, 2020 jasonkuehlLeave a Comment on How I Found An S3 Vulnerability.
-
 It all started back in 2018 with the below email:
 
 I selected the link within the email it brought me to the following URL.
@@ -24,14 +20,15 @@ To which they responded:
 
 Now, remember, this is 2018: right at the height of the S3 bucket madness. You couldn’t go a single month without seeing a new S3 Leak in the headlines. To name a few examples.
 
-    Booz Allen Hamilton The U.S. defense contractor
-    U.S. Voter Records A Republican-party backed big data firm
-    Dow Jones & Co Personally identifiable information for 2.2 million people
-    WWE Personally identifiable information about over 3 million wrestling fans
-    Verizon Wireless Personally identifiable information about 6 million people
-    Time Warner Cable Personally identifiable information about 4 million customers
-    Pentagon Exposures Terabytes of information from spying archive, resume for intelligence positions–including security clearance and operations history, credentials and metadata from an intra-agency intelligence sharing platform.
-    National Credit Federation  111GB of detailed financial information
+* Booz Allen Hamilton The U.S. defense contractor
+* U.S. Voter Records A Republican-party backed big data firm
+* Dow Jones & Co Personally identifiable information for 2.2 million people
+* WWE Personally identifiable information about over 3 million wrestling fans
+* Verizon Wireless Personally identifiable information about 6 million people
+* Time Warner Cable Personally identifiable information about 4 million customers
+* Pentagon Exposures Terabytes of information from spying archive, resume for intelligence positions–including security clearance and operations history, credentials and metadata from an intra-agency
+* intelligence sharing platform.
+* National Credit Federation  111GB of detailed financial information
 
 Luckily, the Org I’m talking about here knew about the issues and was trying to fix it! Great! I sent this follow up:
 
@@ -72,22 +69,24 @@ However, what is the fix? Well, if you don’t use IAC (Infra As Code) it’s 3 
 If applying a policy is more your style here is the basics for a public bucket.
 This will allow for only a get on objects and you need the entire path.
 
+```
 {
     "Version": "2012-10-17",
     "Statement": [
         {
             "Sid": "PublicReadGetObject",
             "Effect": "Allow",
-            "Principal": "*",
+            "Principal": "",
             "Action": [
                 "s3:GetObject"
             ],
             "Resource": [
-                "arn:aws:s3:::canihavepumpkinspiceyet/*"
+                "arn:aws:s3:::canihavepumpkinspiceyet/"
             ]
         }
     ]
 }
+```
 
 With the entire path being required you can hash the locations to your objects like the vendors in the real world example did do. But they made one fatal mistake by leaving that option enabled and thus exposed PII to the internet.
 
