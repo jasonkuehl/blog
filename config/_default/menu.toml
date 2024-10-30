@@ -30,3 +30,19 @@ url = "https://registry.terraform.io/namespaces/jasonkuehl"
 
 [social.params]
 icon = "brand-terraform"
+
+[[social]]
+identifier = "Youtube"
+name = "Youtube"
+url = "https://www.youtube.com/@jasonwkuehl"
+
+[social.params]
+icon = "brand-youtube"
+
+[[social]]
+identifier = "Instagram"
+name = "Instagram"
+url = "https://www.instagram.com/jason.kuehl/"
+
+[social.params]
+icon = "brand-instagram"
