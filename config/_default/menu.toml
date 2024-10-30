@@ -8,25 +8,25 @@
 #newtab = true
 
 [[social]]
-identifier = "github"
+identifier = "Github"
 name = "GitHub"
-url = "https://github.com/CaiJimmy/hugo-theme-stack"
+url = "https://github.com/jasonkuehl"
 
 [social.params]
 icon = "brand-github"
 
 [[social]]
-identifier = "twitter"
-name = "Twitter"
-url = "https://twitter.com"
+identifier = "Linkedin"
+name = "Linkedin"
+url = "https://www.linkedin.com/in/jasonwkuehl/"
 
 [social.params]
-icon = "brand-twitter"
+icon = "brand-linkedin"
 
 [[social]]
-identifier = "youtube"
-name = "youtube"
-url = "https://youtube.com"
+identifier = "Terraform"
+name = "Terraform"
+url = "https://registry.terraform.io/namespaces/jasonkuehl"
 
 [social.params]
-icon = "brand-github"
+icon = "brand-terraform"
