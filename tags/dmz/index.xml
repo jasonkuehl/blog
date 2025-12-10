@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>DMZ on Jason Kuehl Blog</title><link>https://blog.jasonkuehl.com/tags/dmz/</link><description>Recent content in DMZ on Jason Kuehl Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 29 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.jasonkuehl.com/tags/dmz/index.xml" rel="self" type="application/rss+xml"/><item><title>Designing DMZs for Cloud</title><link>https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./</link><pubDate>Sat, 29 Nov 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./cover.jpg" alt="Featured image of post Designing DMZs for Cloud" /&gt;&lt;h1 id="rfc6598-and-dmz-understanding-the-crucial-role-in-network-architecture"&gt;RFC6598 and DMZ: Understanding the Crucial Role in Network Architecture.
+&lt;/h1&gt;&lt;p&gt;I work with many vendors that need to connect physical equipment in a warehouse setting. I also work with vendors who connect non-cloud services (the big three: AWS, Azure, GCP) to one of the big three. I&amp;rsquo;ll discuss what I’ve learned and designed over the years, with the hope of helping others with some of the headaches you might encounter.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s introduce a new type of DMZ called the &amp;lsquo;Partner&amp;rsquo;. This is a logical network specifically designed for vendors, partners, and other on-premises devices that we do not want to be part of our corporate network. It&amp;rsquo;s distinct from the traditional DMZ for corporate servers that may host services accessible to the public.&lt;/p&gt;
+&lt;h1 id="90-of-vendors-and-partners-need-the-following"&gt;90% of vendors and partners need the following
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Internet access&lt;/li&gt;
+&lt;li&gt;Access to specific systems&lt;/li&gt;
+&lt;li&gt;Remote access to equipment (50/50)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The remaining 10% are what we call &amp;lsquo;wild card 1-offs.&amp;rsquo; These are unique situations that you can&amp;rsquo;t always plan for or predict. Dealing with these instances requires flexibility and adaptability.&lt;/p&gt;
+&lt;h2 id="practicality-in-design-ensuring-seamless-vendor-integration-in-the-partner-dmz"&gt;Practicality in Design: Ensuring Seamless Vendor Integration in the Partner DMZ.
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://datatracker.ietf.org/doc/html/rfc6598" target="_blank" rel="noopener"
+&gt;https://datatracker.ietf.org/doc/html/rfc6598&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;IPv4 /10 address block to be used as Shared Address Space to accommodate the needs of Carrier- Grade NAT (CGN) devices. It is anticipated that Service Providers will use this Shared Address Space to number the interfaces that connect CGN devices to Customer Premises Equipment (CPE). &lt;br&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Many telcos will use this range for modems, cellphones, or direct connections. In this design, we will use it for all our vendors&amp;rsquo; and partners&amp;rsquo; on-site equipment. This will allow them to run any local network on their equipment as needed, without trampling on any RFC 1918 networks you might have behind your firewall.&lt;/p&gt;
+&lt;h2 id="cloud--partner--onprem-simple-design"&gt;Cloud / Partner / Onprem Simple Design
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing.jpg"
+width="992"
+height="812"
+srcset="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing_hu_f916834246d60624.jpg 480w, https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing_hu_2e337a95fbf02257.jpg 1024w"
+loading="lazy"
+alt="Alt text"
+class="gallery-image"
+data-flex-grow="122"
+data-flex-basis="293px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Firewall to trusted network, vpn to cloud, DMZ corp, and DMZ partner.&lt;/p&gt;
+&lt;p&gt;This design enables the partner to communicate with specific services in our cloud or on-premises. These are locked-down ACLS with accounts limited to what they need access to.&lt;/p&gt;
+&lt;h2 id="cloud-dmz-design"&gt;Cloud DMZ Design.
+&lt;/h2&gt;&lt;p&gt;If you apply what we just talked about to the cloud, it looks almost the same, but depending on the cloud, you have different options. I&amp;rsquo;m only going to use things that each of the big ones will have.&lt;/p&gt;
+&lt;p&gt;VPCs, Local Balances, Health Checks, ACLs, and Route tables. All of the big 3 have these, and there are plenty of other services in each cloud you can also use. I plan to talk about an AWS-specific design in the future.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only.jpg"
+width="1030"
+height="402"
+srcset="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only_hu_24c40f33e74fdb38.jpg 480w, https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only_hu_733cc5d040dd7e73.jpg 1024w"
+loading="lazy"
+alt="Alt text"
+class="gallery-image"
+data-flex-grow="256"
+data-flex-basis="614px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Several VPCs connecting to 1 VPC give a route table with LoadBalancers that make the connection. On the other side is a VPN from the partner, and they have services that connect to a load balancer. Make this like the AAWSPartnerconnection for the session.&lt;/p&gt;
+&lt;p&gt;In this example, we have a partner providing two services, and we, the customer, are also providing them access to an internal service. Think of the load balancers as the endpoints for all access. This allows us to set ACLs and health checks for monitoring services in that cloud. The Vendor/Partner here only has routes to the 100.64 range and can&amp;rsquo;t talk to any other VPC.&lt;/p&gt;
+&lt;p&gt;Empowerment through Control: The Simple Designs that Put You in Charge of the Partner/Vendor Network.&lt;/p&gt;
+&lt;p&gt;Keeps the network secure
+Allows for total visibility into each vendor/partner
+Limit access and use the least privilege
+Prevent IP trampling of internal networks.
+Any cloud or on-premises firewall can do this.
+The goal is to give you an idea and expand on what works best for your company or personal use. This may not work for everyone, but I hope to give someone that light bulb moment to build something that works for them!&lt;/p&gt;
+&lt;p&gt;Reference&lt;/p&gt;
+&lt;p&gt;Kuarsingh, V., Weil, J., Donley, C., Liljenstolpe, C., &amp;amp; Azinger, M. (2012). IANA-Reserved IPv4 Prefix for Shared Address Space. &lt;a class="link" href="https://doi.org/10.17487/rfc6598" target="_blank" rel="noopener"
+&gt;https://doi.org/10.17487/rfc6598&lt;/a&gt;&lt;/p&gt;</description></item></channel></rss>

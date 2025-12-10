@@ -1,0 +1,470 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Jason Kuehl Blog</title><link>https://blog.jasonkuehl.com/</link><description>Recent content on Jason Kuehl Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 29 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.jasonkuehl.com/index.xml" rel="self" type="application/rss+xml"/><item><title>Designing DMZs for Cloud</title><link>https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./</link><pubDate>Sat, 29 Nov 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./cover.jpg" alt="Featured image of post Designing DMZs for Cloud" /&gt;&lt;h1 id="rfc6598-and-dmz-understanding-the-crucial-role-in-network-architecture"&gt;RFC6598 and DMZ: Understanding the Crucial Role in Network Architecture.
+&lt;/h1&gt;&lt;p&gt;I work with many vendors that need to connect physical equipment in a warehouse setting. I also work with vendors who connect non-cloud services (the big three: AWS, Azure, GCP) to one of the big three. I&amp;rsquo;ll discuss what I’ve learned and designed over the years, with the hope of helping others with some of the headaches you might encounter.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s introduce a new type of DMZ called the &amp;lsquo;Partner&amp;rsquo;. This is a logical network specifically designed for vendors, partners, and other on-premises devices that we do not want to be part of our corporate network. It&amp;rsquo;s distinct from the traditional DMZ for corporate servers that may host services accessible to the public.&lt;/p&gt;
+&lt;h1 id="90-of-vendors-and-partners-need-the-following"&gt;90% of vendors and partners need the following
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Internet access&lt;/li&gt;
+&lt;li&gt;Access to specific systems&lt;/li&gt;
+&lt;li&gt;Remote access to equipment (50/50)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The remaining 10% are what we call &amp;lsquo;wild card 1-offs.&amp;rsquo; These are unique situations that you can&amp;rsquo;t always plan for or predict. Dealing with these instances requires flexibility and adaptability.&lt;/p&gt;
+&lt;h2 id="practicality-in-design-ensuring-seamless-vendor-integration-in-the-partner-dmz"&gt;Practicality in Design: Ensuring Seamless Vendor Integration in the Partner DMZ.
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://datatracker.ietf.org/doc/html/rfc6598" target="_blank" rel="noopener"
+&gt;https://datatracker.ietf.org/doc/html/rfc6598&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;IPv4 /10 address block to be used as Shared Address Space to accommodate the needs of Carrier- Grade NAT (CGN) devices. It is anticipated that Service Providers will use this Shared Address Space to number the interfaces that connect CGN devices to Customer Premises Equipment (CPE). &lt;br&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Many telcos will use this range for modems, cellphones, or direct connections. In this design, we will use it for all our vendors&amp;rsquo; and partners&amp;rsquo; on-site equipment. This will allow them to run any local network on their equipment as needed, without trampling on any RFC 1918 networks you might have behind your firewall.&lt;/p&gt;
+&lt;h2 id="cloud--partner--onprem-simple-design"&gt;Cloud / Partner / Onprem Simple Design
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing.jpg"
+width="992"
+height="812"
+srcset="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing_hu_f916834246d60624.jpg 480w, https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing_hu_2e337a95fbf02257.jpg 1024w"
+loading="lazy"
+alt="Alt text"
+class="gallery-image"
+data-flex-grow="122"
+data-flex-basis="293px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Firewall to trusted network, vpn to cloud, DMZ corp, and DMZ partner.&lt;/p&gt;
+&lt;p&gt;This design enables the partner to communicate with specific services in our cloud or on-premises. These are locked-down ACLS with accounts limited to what they need access to.&lt;/p&gt;
+&lt;h2 id="cloud-dmz-design"&gt;Cloud DMZ Design.
+&lt;/h2&gt;&lt;p&gt;If you apply what we just talked about to the cloud, it looks almost the same, but depending on the cloud, you have different options. I&amp;rsquo;m only going to use things that each of the big ones will have.&lt;/p&gt;
+&lt;p&gt;VPCs, Local Balances, Health Checks, ACLs, and Route tables. All of the big 3 have these, and there are plenty of other services in each cloud you can also use. I plan to talk about an AWS-specific design in the future.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only.jpg"
+width="1030"
+height="402"
+srcset="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only_hu_24c40f33e74fdb38.jpg 480w, https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only_hu_733cc5d040dd7e73.jpg 1024w"
+loading="lazy"
+alt="Alt text"
+class="gallery-image"
+data-flex-grow="256"
+data-flex-basis="614px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Several VPCs connecting to 1 VPC give a route table with LoadBalancers that make the connection. On the other side is a VPN from the partner, and they have services that connect to a load balancer. Make this like the AAWSPartnerconnection for the session.&lt;/p&gt;
+&lt;p&gt;In this example, we have a partner providing two services, and we, the customer, are also providing them access to an internal service. Think of the load balancers as the endpoints for all access. This allows us to set ACLs and health checks for monitoring services in that cloud. The Vendor/Partner here only has routes to the 100.64 range and can&amp;rsquo;t talk to any other VPC.&lt;/p&gt;
+&lt;p&gt;Empowerment through Control: The Simple Designs that Put You in Charge of the Partner/Vendor Network.&lt;/p&gt;
+&lt;p&gt;Keeps the network secure
+Allows for total visibility into each vendor/partner
+Limit access and use the least privilege
+Prevent IP trampling of internal networks.
+Any cloud or on-premises firewall can do this.
+The goal is to give you an idea and expand on what works best for your company or personal use. This may not work for everyone, but I hope to give someone that light bulb moment to build something that works for them!&lt;/p&gt;
+&lt;p&gt;Reference&lt;/p&gt;
+&lt;p&gt;Kuarsingh, V., Weil, J., Donley, C., Liljenstolpe, C., &amp;amp; Azinger, M. (2012). IANA-Reserved IPv4 Prefix for Shared Address Space. &lt;a class="link" href="https://doi.org/10.17487/rfc6598" target="_blank" rel="noopener"
+&gt;https://doi.org/10.17487/rfc6598&lt;/a&gt;&lt;/p&gt;</description></item><item><title>From Engineer to Manager</title><link>https://blog.jasonkuehl.com/p/from-engineer-to-manager/</link><pubDate>Tue, 18 Nov 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/from-engineer-to-manager/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/from-engineer-to-manager/cover.jpg" alt="Featured image of post From Engineer to Manager" /&gt;&lt;h1 id="being-awesome"&gt;Being awesome
+&lt;/h1&gt;&lt;p&gt;As someone who initially hesitated to take on a management role, I&amp;rsquo;ve learned some valuable lessons that I’d like to share. If you’re contemplating a similar path, you may be facing similar feelings of uncertainty. One key thing to understand is that, regardless of your new title, you will always carry your identity as an engineer. Transitioning into management doesn&amp;rsquo;t mean abandoning your engineering skills; rather, it involves using them in a different capacity.&lt;/p&gt;
+&lt;p&gt;Instead of being directly involved in the hands-on aspects of projects, you will become the strategic architect behind them. Your role will shift to overseeing the planning and organization of projects, ensuring that every detail is considered and executed efficiently. You will start to focus on developing project timelines, allocating resources, and managing budgets, all while maintaining the technical standards you’ve cultivated throughout your career.&lt;/p&gt;
+&lt;p&gt;Moreover, a crucial part of your new responsibilities will be guiding and mentoring your team. You’ll play a pivotal role in fostering an environment that encourages professional growth among your employees. This involves conducting training sessions, providing constructive feedback, and empowering your team to enhance their engineering skills. By taking on this supportive role, you&amp;rsquo;ll not only help them improve but also elevate the quality of work produced by your entire team. The journey may be challenging, but embracing your management position can lead to fulfilling new opportunities both for yourself and your colleagues.&lt;/p&gt;
+&lt;p&gt;As an engineer, your success was defined by my ability to solve problems, write Terraform, and deliver new infrastructure. However, transitioning to a managerial role brought about a significant shift in focus. It was no longer about yout individual contributions; it was about enabling the success of the team. This shift required me to let go of direct technical contributions and embrace the role of a facilitator and mentor. Learning to trust my team, delegate effectively, and measure success by their growth, cohesion, and impact became crucial.&lt;/p&gt;
+&lt;p&gt;Managing people presents a unique set of challenges. Unlike Terraform, which is logical and predictable, people are complex. Understanding the individual motivations of team members, resolving conflicts, and balancing camaraderie with accountability are all essential skills. This understanding not only helps in managing the team effectively but also fosters a sense of empathy and connection with team members, which is vital in a managerial role.
+I also had to broaden my perspective, thinking long-term, aligning team goals with the business vision, and advocating for the team in conversations with senior leadership. This required learning to “manage up” while maintaining a balance between empowering my team and meeting organizational objectives.
+The most significant lesson I&amp;rsquo;ve learned is that management is not just a career change; it’s a shift in mindset. It’s about transitioning from being a problem-solver to an enabler, and from focusing solely on technical excellence to nurturing people and culture. While I still value technical proficiency, the true joy now comes from witnessing my team succeed, grow, and collectively make a significant impact. This sense of fulfillment—from seeing the seeds of my guidance blossom into success—is a testament to the success of my transition.&lt;/p&gt;
+&lt;p&gt;This journey wont been without its challenges, but it will been gratifying. It’s a continuous process of learning and introspection—a reminder that, as managers, our most significant success lies in the success of the people we lead. This emphasis on continuous learning and reflection underscores the need for constant improvement and growth in the management role, making it a vital part of our professional journey. It&amp;rsquo;s a journey that keeps us engaged, reflective, and always striving for better.&lt;/p&gt;</description></item><item><title>Startups from the Significant Others' Perspective</title><link>https://blog.jasonkuehl.com/p/startups-from-the-significant-others-perspective/</link><pubDate>Sat, 18 Oct 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/startups-from-the-significant-others-perspective/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/startups-from-the-significant-others-perspective/cover.jpg" alt="Featured image of post Startups from the Significant Others' Perspective" /&gt;&lt;p&gt;Startups from the Significant Others&amp;rsquo; Perspective&lt;/p&gt;
+&lt;p&gt;I have spent many years working in startups before transitioning to a more corporate role. Before diving into the details, let&amp;rsquo;s discuss the three phases of every startup.&lt;/p&gt;
+&lt;p&gt;Phase 1: The Jank - Startups begin with a quickly and informally developed idea, often with minimal documented processes, but it either works or is close to an end product. These are the essential people during this early stage of building the business. They focus on rapid execution to meet crucial deadlines vital for survival.&lt;/p&gt;
+&lt;p&gt;Phase 2: This phase marks the shift from informal methods to a formalized process, involving automation, documentation, and initiating thorough design reviews to enhance the product. The &amp;ldquo;Get Stuff Done&amp;rdquo; individual now operates within new boundaries and begins building automation. Typically, personnel change at this stage, with new team members taking over. The focus remains on “we need this to make money,&amp;quot; but now includes developing timelines, managing customer expectations, and understanding the time required for development.&lt;/p&gt;
+&lt;p&gt;Phase 3: This final stage can take years to achieve, involving a documented, process-oriented, and PMO-enforced workforce. Timelines are respected, processes are created where lacking, and there’s no need to say “To build this or we don&amp;rsquo;t have jobs.”&lt;/p&gt;
+&lt;p&gt;Many startups try to skip steps or rush through processes, believing they don&amp;rsquo;t need a structured approach and thinking they can &amp;ldquo;make it go faster.&amp;rdquo; However, most startups face a significant ramp-up period, just like any other company, and simply throwing people at the problem isn&amp;rsquo;t effective.&lt;/p&gt;
+&lt;p&gt;Startups should focus on teams developing revenue-generating products. Employees want the
+company to grow, not to face job cuts. So, why is there such intense pressure on the product team? When shortcuts are taken and there&amp;rsquo;s an effort to do more with less, senior management notices the increased productivity. They often see this as a way to increase profits from the final product. When you ask for more, they show how much has been accomplished with fewer resources. You won&amp;rsquo;t get more until real failures happen, unless the workplace is toxic.&lt;/p&gt;
+&lt;p&gt;High employee turnover, Lack of career growth, Lack of appreciation,poor communication, and a lack of work-life balance—coupled with removing positions without backfills—create the impression that the issue lies with the individual rather than the process.&lt;/p&gt;
+&lt;p&gt;If that sounded like your significant other or friends casually talking about their day at work, it might be because you work somewhere that can be tough on employees, pushing them to succeed at any cost. About 55 percent of reasons why people leave a company are poor management, work-life balance issues, leadership problems, and toxic culture, while pay accounts for only 15%.&lt;/p&gt;
+&lt;p&gt;This brings me to the end. Why do startups fail or face long-term issues? Poor leadership and management are often the causes.&lt;/p&gt;
+&lt;p&gt;The phases I mentioned earlier are guided by management, not by individual contributors or those actively involved in the product. Failure is never the fault of a single person or team; instead, it results from flawed processes or the lack of proper procedures. Leaders and managers must understand this. Punishing employees and disregarding their feedback only makes matters worse. They are actually trying to highlight issues and propose improvements. As a leader, it is your responsibility to listen carefully and respond appropriately.&lt;/p&gt;
+&lt;p&gt;You have a responsibility to share your information with your team to support their growth, development, and ensure everyone has what they need to succeed. Avoid threats like “Well, if we don&amp;rsquo;t get this, it&amp;rsquo;s the end” or dismissive remarks like “We&amp;rsquo;ll make it work,” as these can cause you to lose the respect of your colleagues. Recognize who your stars are and do not penalize those who are genuinely trying to achieve more with less.&lt;/p&gt;</description></item><item><title>Stop Using ISP Provided DNS</title><link>https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/</link><pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/cover.jpg" alt="Featured image of post Stop Using ISP Provided DNS" /&gt;&lt;p&gt;ISP URL Filtering and Blocking&lt;/p&gt;
+&lt;p&gt;Most, if not all, ISPs offer URL-based protections. These are mostly automated systems that decide if a site is malicious or not. To name just a few&lt;/p&gt;
+&lt;p&gt;Xfinity xFi Advanced Security
+Comcast Xfinity xFi Advanced Security
+Comcast Business SecurityEdge
+Cox Advanced Security
+spectrum Site Shield
+ATT Smart Home
+Tmobile Web Guard&lt;/p&gt;
+&lt;p&gt;The major issue with most of these systems is their automated nature in identifying what is, in quotes, “Bad.” See my post here about Xfinity blocking my Corp VPN Several times over the years and never getting a reason why. Recently, I assisted a friend with transferring his online store from Squarespace to Shopify, and users on the spectrum received a message about a suspicious site being blocked. There was no reason as to why, or what category, just blocked.&lt;/p&gt;
+&lt;p&gt;Check out this site at &lt;a class="link" href="https://rocketprops.store/" target="_blank" rel="noopener"
+&gt;https://rocketprops.store/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Now, what is the solution? Most of these companies have a procedure to remove the block, but that can take up to one week. Its a really shiity process and unless you’re technically enough, you might not know what to do as an owner of a website or other service that get blocked by an ISP like this. And, they dont need to remove it.&lt;/p&gt;
+&lt;p&gt;Knowing what you know about this, what can you do? Well, you have 3 total options: paid service, a non-paid service that targeted, and build something yourself.&lt;/p&gt;
+&lt;p&gt;Paid Options&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://meetcircle.com/" target="_blank" rel="noopener"
+&gt;https://meetcircle.com/&lt;/a&gt;
+&lt;a class="link" href="https://nextdns.io/" target="_blank" rel="noopener"
+&gt;https://nextdns.io/&lt;/a&gt;
+&lt;a class="link" href="https://controld.com/plans?step=plans" target="_blank" rel="noopener"
+&gt;https://controld.com/plans?step=plans&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Free Targeted filtering options
+&lt;a class="link" href="https://signup.opendns.com/homefree/" target="_blank" rel="noopener"
+&gt;https://signup.opendns.com/homefree/&lt;/a&gt;
+Quad9 for malicious domain blocking&lt;/p&gt;
+&lt;p&gt;.cloudflare.com/introducing-1-1-1-1-for-families/
+&lt;a class="link" href="https://one.one.one.one/family/" target="_blank" rel="noopener"
+&gt;https://one.one.one.one/family/&lt;/a&gt;
+Malware Blocking Only
+Primary DNS: 1.1.1.2
+Secondary DNS: 1.0.0.2
+Malware and Adult Content
+Primary DNS: 1.1.1.3
+Secondary DNS: 1.0.0.3
+These are self-hosted services that you can run to give you that control, but they are more advanced to set up and maintain, and you’re the maintainer.&lt;/p&gt;
+&lt;p&gt;Pihole
+AdGuard&lt;/p&gt;</description></item><item><title>Xfinity Blocking URLs For No Reason</title><link>https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/</link><pubDate>Wed, 31 Jan 2024 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/cover.jpg" alt="Featured image of post Xfinity Blocking URLs For No Reason" /&gt;&lt;h1 id="xfinty-url-filtering-"&gt;Xfinty URL Filtering &amp;gt;:(
+&lt;/h1&gt;&lt;p&gt;There have been a few instances in which Xfinity has blocked my company’s VPN URL. Xfinity needs a better process for unblocking that URL, but that is a different rant. You can not open tickets with them if you’re not an Xfinity customer. This makes no sense, and it’s infuriating. Xfinity will not tell us why or how the block was triggered. We were told on the 1st and 2nd time it happened it was “a known issue,” and it was resolved, but we’ve had other issues.&lt;/p&gt;
+&lt;p&gt;Suppose you find yourself googling and end up here. Here is what we did to fix this and what to look for.&lt;/p&gt;
+&lt;p&gt;It all started when some users couldn’t connect to the VPN. After some troubleshooting, we discovered that it was only affecting Xfinity users. Upon further investigation, we found that all Xfinity users had Xfinity advanced security enabled, blocking our VPN URL under the “blocked” tab. Even when a user removed the block, it would reappear in the block list after an hour. We had to request users to remove the block and disable Xfinity advanced security entirely to resolve the issue.&lt;/p&gt;
+&lt;p&gt;The next time we happened, Xfinity pushed an update that re-enabled Xfinity’s advanced security; however, users didn’t see our URL blocked. Xfinity told our users it was blocked. You’ll need to use this site &lt;a class="link" href="https://spa.xfinity.com/advanced-security?faq=advanced-security" target="_blank" rel="noopener"
+&gt;https://spa.xfinity.com/advanced-security?faq=advanced-security&lt;/a&gt; to request the URL block is removed. It says 3-4 business days. It won’t matter how much you call, complain, or reps you talk to. The process is terrible, and Xfinity will not allow you to speak with an engineer. You’re stuck with tech support Tier 1 and 2 only. Who can only update the tickets on the SPA side.&lt;/p&gt;
+&lt;p&gt;Xfinity will not tell us why this happened, so we took measures and made backup plans.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;The Xfinity block blocked the entire TLD, not just the subdomain we found in some instances. We made a backup VPN URL under a different TLD to allow our users to connect. If we used a VPN.jasonkuehl.com, we made vpn.jasonkuehl.blah. This was a massive solution for us, allowing all blocked Xfinity users to connect.
+We made documentation to show users how to unblock our URL from the Xfinity app and how to turn off Xfinity’s advanced security.
+We request that users open tickets with Xfinity and provide them to us.
+I sent in a SPA request to unblock the URL.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you found this frustrating and wanted to smash things, I did, too. The problem is this is 100% out of your control. If you were ever affected by Xfinity, create the backup VPN URL. It will allow all your users to connect and work.&lt;/p&gt;
+&lt;p&gt;Technical details.&lt;/p&gt;
+&lt;p&gt;If you try to hit the URL, you’ll see this. It makes you think that your SSL might be messed up or broken. But if you check on other ISPs, fine.&lt;/p&gt;
+&lt;p&gt;It works fine if you hit your VPN without the cert and do it directly to the IP. But using the URL will fail, not connect, and can’t hit the destination.&lt;/p&gt;</description></item><item><title>RCN Business Cable Internet Is Not Business Ready</title><link>https://blog.jasonkuehl.com/p/rcn-business-cable-internet-is-not-business-ready/</link><pubDate>Sat, 30 Apr 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/rcn-business-cable-internet-is-not-business-ready/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/rcn-business-cable-internet-is-not-business-ready/cover.jpg" alt="Featured image of post RCN Business Cable Internet Is Not Business Ready" /&gt;&lt;h1 id="before-we-start"&gt;Before we start:
+&lt;/h1&gt;&lt;p&gt;My journey with RCN over the past 6 years as a residential customer was great. I only left them due to I’m moving into a new house, and they service the area. I also what to say I’m only talking about their Cable Business internet, not any other part of their business they offer as I’ve never used their Ethernet or Fiber in business before.&lt;/p&gt;
+&lt;p&gt;My friend I wanted business internet with enough public IP space we both could use. We both liked RCN as residential users and gave them a ring. For a 2-year contract, we got 500/60 for 90 dollars a month with a /28 for 14 external IPs. Not too bad of a price and service and uptime wise, RCN was fine for our needs. We had only 1 outage in that 2 years that was rain-related.&lt;/p&gt;
+&lt;p&gt;I run a larger Lab out of a Makerspace in Somerville MA which will soon be moving into my new house :). Here I test and do a lot of different things.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Testing out new technologies I can get my hands on&lt;/li&gt;
+&lt;li&gt;GNS3 Lab&lt;/li&gt;
+&lt;li&gt;Full VMware and ProxMox Setup&lt;/li&gt;
+&lt;li&gt;Anything Docker related&lt;/li&gt;
+&lt;li&gt;CICD (Jenkins or bla)&lt;/li&gt;
+&lt;li&gt;Remote Coding&lt;/li&gt;
+&lt;li&gt;Test AD Environment&lt;/li&gt;
+&lt;li&gt;Game ServersEtc, the list goes on&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="with-that-out-of-the-way-lets-start-down-the-road-of-the-most-bizarre-issues-ive-ever-had-with-an-isp"&gt;With that out of the way let’s start down the road of the most bizarre issues I’ve ever had with an ISP.
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;DHCP For Static IPS?
+From the start, we had odd issues, and it was always around our static IP Block. After an entire month of working with RCN on what was happening, we found out that RCN provides your Static IP block over DHCP. This blows my mind a little and I asked them why. They said it was to help customers who were not “tech” savvy. I asked them to disable it for our block and was told no as it was harder on the techs to debug an issue if we leave as a customer, and they reassign the block. If that new customer requests static IPS, and it’s not auto-assigned for them, it will create a ticket for them.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="thats-not-what-static-means"&gt;Thats not what static means..
+&lt;/h2&gt;&lt;p&gt;When I asked how are these static IPs when it’s in a DHCP scope I was told it’s static to the modem only. I will always have these IPs on our modem. Several calls to RCN later I never got them to disable this it was an actual nightmare to debug issues.&lt;/p&gt;
+&lt;h2 id="dont-plug-in-any-network-device-setup-to-dhcp-mode"&gt;Don’t Plug In Any Network Device Setup to DHCP Mode
+&lt;/h2&gt;&lt;p&gt;Our setup was as basic as it gets. One cable modem connected to an edge switch with a single VLAN. From here all edge devices would connect. The problem? Most network devices come with DHCP mode enabled on the outside interface meaning it would get a DHCP IP address. The head office will hand out the first IP in the list. If something was assigned to .2 “staticly” it will be overridden by the head office and that new device’s mac address (The one on DHCP) will be on file for that IP. You cant reboot the cable modem to fix this. You need to call RCN, get to a level 2 tech who can log into that piece of equipment to release the DHCP request. Then you can reboot the cable modem to get your original device working. I made this mistake once, and it took about 2 hours working with RCN to get resolved.&lt;/p&gt;
+&lt;p&gt;To be fair, this is how DHCP works. The DHCP Server will not know about staticly set IP addresses, but RCN will not do reservations. I tried for my entire block down to single IPs with no luck. Our workaround in case this ever happened again? We skipped the first IP in the block making it unable for an opps scenario. RCN tells you that you should be using DHCP and not staticly setting up IPS. However, that is also terrible. The head office only keeps the address logged for 2 hours (I was told). If you had an issue where your devices were offline for 3-4 hours on DHCP their records would no longer be at the head office. If you had 2 devices .2 and .3 on DHCP device1 had.2 and device 2 had.3 if device 2 booted faster it would then be .2 and device1 would be.3 See the example Below.&lt;/p&gt;
+&lt;h2 id="device-failover-wont-work"&gt;Device Failover Won’t Work
+&lt;/h2&gt;&lt;p&gt;On top of how static IPS work within RCN, we found a new issue. On a device failover, the cable modem caches the mac address of the old device. What I can see in Wireshark is the cable modem still saying that the old mac address had that IP. It wont work without a reboot. I’ve done this same setup on Comcast business, Xfinity, and different Cell Carriers. The crazy part is, if I switch my firewalls to DHCP mode on the external interface it works fine. When I call RCN, they only say Active/Active or Active/passive is not supported on cable.&lt;/p&gt;
+&lt;h2 id="customer-name-change"&gt;Customer Name Change
+&lt;/h2&gt;&lt;p&gt;This was the most annoying part of all of this. I decided to move my lab into my new house and need to change the names on the account over to my friend. We got the name change forum and I asked if “Anything else is needed or to worry about” RCN said no that the account would move over to him as is. That was not the case. On the account change, we lost our static IP block. It took over 4 hours for RCN to fix the issue. According to RCN, I should have told them we had a static IP block. Because they treated it as a new account. After talking to a supervisor I was told “It’s the customer’s responsibly to let us know about their static ranges” Below you can see the only questions I was ever asked.&lt;/p&gt;
+&lt;h2 id="network-jank"&gt;Network Jank.
+&lt;/h2&gt;&lt;p&gt;This was a rollercoaster of a ride and at the end of the day, I can’t recommend RCN to anyone for business. They have both process issues and will bring technical challenges to the customer if they expect things to work as it does with other carriers.&lt;/p&gt;</description></item><item><title>Dell N Series – No Free IP Address To Offer In Pool</title><link>https://blog.jasonkuehl.com/p/dell-n-series-1/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/dell-n-series-1/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/dell-n-series-1/cover.jpg" alt="Featured image of post Dell N Series – No Free IP Address To Offer In Pool" /&gt;&lt;p&gt;Dell N Series – No Free IP Address To Offer In Pool
+Blog Networking
+October 13, 2020 jasonkuehl&lt;/p&gt;
+&lt;p&gt;At this site we installed a new Dell N Series core replacing a bunch of old junk. As I’m doing the new build I moved all the DHCP requests to the core and away from windows which took care of all the DHCP requests. This was on a off day with no one around (Duh replacing the core) and I was not really worried. After about 30 minutes my console is filling up with the below messages.&lt;/p&gt;
+&lt;p&gt;Note: Yes it’s VLAN1 it predates me and is waaay too messy to remove in a weekend.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Error “No Free IP Address To Offer in pool VLAN1”&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Start freaking out&lt;/em&gt; Did I fill the pool already? How can that be?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;show ip dhcp binding
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Everything looks fine, and the pool is not even close to full… To the Logs!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;show logs
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;I’ve seen this before in Cisco where a device holds onto a DHCP address. You need to track down the MAC and give the device a reboot. After the reboot (of the device) these errors should go away.&lt;/p&gt;
+&lt;p&gt;Full Image&lt;/p&gt;</description></item><item><title>Google Geo Location Issues</title><link>https://blog.jasonkuehl.com/p/google-geo-location-issues/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/google-geo-location-issues/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/google-geo-location-issues/cover.jpg" alt="Featured image of post Google Geo Location Issues" /&gt;&lt;h1 id="google-geo-datebase"&gt;Google Geo Datebase
+&lt;/h1&gt;&lt;p&gt;Google runs its database like ARIN on who owns what IP and sets a location. If you look up an IP owner in ARIN, you’ll see the name, address, and IP location. Google does this as well, but it’s private.&lt;/p&gt;
+&lt;p&gt;This becomes important when your Google page suddenly shows Belarus. You need to contact Google or ARIN. You’ll know it’s a Google issue if you don’t see this issue in Bing or DuckDuckGo.&lt;/p&gt;
+&lt;p&gt;If you’re reading this, your Google location now shows a different country or area from your owned IP location in ARIN. Google has changed this in their database. The process to fix this will take 1–2 months. You need to open a ticket with &lt;a class="link" href="mailto:noc@google.com" &gt;noc@google.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;If you’re an ISP, you can use &lt;a class="link" href="https://isp.google.com/" target="_blank" rel="noopener"
+&gt;https://isp.google.com/&lt;/a&gt;. Anyone who runs a VPN for a company website or other service must open a ticket with the NOC. If you can get an ISP account, you can control IP address locations.&lt;/p&gt;
+&lt;p&gt;I got this information from the &lt;a class="link" href="mailto:nanog@nanog.org" &gt;nanog@nanog.org&lt;/a&gt; mailing list. I contacted a Google Ops Engineer on this list, who told me to use &lt;a class="link" href="mailto:noc@google.com" &gt;noc@google.com&lt;/a&gt; for all Google-related issues. They were able to send my issue over to the correct department. For all my funky-related network issues, I posted them to this list to get help from other engineers.&lt;/p&gt;
+&lt;p&gt;See the below response from Google.&lt;/p&gt;
+&lt;p&gt;At the end of the day, a bug in the service saw traffic from Belarus, and Google started to assume this was the main location where that IP belonged. After talking with other engineers from other companies, this is “normal” when you start to branch out in hiring from other countries. However, it would never be an issue if Google just used the ARIN database like everyone else.&lt;/p&gt;</description></item><item><title>FTP Is 50 Today</title><link>https://blog.jasonkuehl.com/p/ftp-is-50-today/</link><pubDate>Fri, 16 Apr 2021 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/ftp-is-50-today/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/ftp-is-50-today/cover.jpg" alt="Featured image of post FTP Is 50 Today" /&gt;&lt;p&gt;April 16th, 1971 RFC959 (you may know it as FTP) was born, making it 50 years old today. Even though it is that old and there are serious security concerns, there are still numerous FTP servers running. For example (Pulled from Shodan):&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;United States 736,721
+Japan 285,691
+China 284,550
+Germany 280,699
+Russian Federation 151,815
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Let’s look just into the United States numbers on top products:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Microsoft ftpd 496,113
+Pure-FTPd 122,447
+Serv-U ftpd 34,093
+Multicraft ftpd 32,531
+D-Link DLS-2750U13,543
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id="ftp-lacks-security"&gt;FTP Lacks Security
+&lt;/h2&gt;&lt;p&gt;FTP is inherently a non-secure way to transfer data. When a file is sent using this protocol the data, username, and password are all shared in plain text, which means a hacker can access this information with little to no effort.&lt;/p&gt;
+&lt;p&gt;Most of the FTP services I looked at didn’t allow anonymous login but did have usernames and passwords attached. Which you think would be a good security protocol. However, all these servers (since they’re running Microsoft ftpd) could be exploited by CVE-2009-3023. There are 2 known public bash-like exploits that anyone can run just off GitHub, and the 3rd is a very easy-to-use Metasploit module:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;‘show options’ or ‘show advanced’:
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;msf &amp;gt; use exploit/multi/ftp/pureftpd_bash_env_exec msf
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;exploit(pureftpd_bash_env_exec) &amp;gt; show targets …targets… msf
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;exploit(pureftpd_bash_env_exec) &amp;gt; set TARGET &amp;lt; target-id &amp;gt; msf
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;exploit(pureftpd_bash_env_exec) &amp;gt; show options …show and set
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;options… msf exploit(pureftpd_bash_env_exec) &amp;gt; exploit
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id="data"&gt;Data.
+&lt;/h2&gt;&lt;p&gt;Plus the data is transmitted unencrypted. Need I say more…&lt;/p&gt;
+&lt;h2 id="nat"&gt;Nat.
+&lt;/h2&gt;&lt;p&gt;A dynamic, secondary port, is needed for the data channels, which makes firewall and port forwarding more complex and beyond the abilities of most home network administrators. This is required to achieve the fantastic transfer speeds that many FTP proponents crow about.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion.
+&lt;/h2&gt;&lt;p&gt;Today, FTP should only be used on extreme legacy systems and for public access anonymous FTP. Even for anonymous public access, HTTPS and web servers have largely replaced FTP. Since FTP is unencrypted, man-in-the-middle attacks can and have been used to inject malware into software downloaded using FTP.&lt;/p&gt;
+&lt;p&gt;Yet, there are so many still online. Basic things you buy today come with FTP enabled (like printers).&lt;/p&gt;
+&lt;p&gt;If you really need external file transfer, you should already be used SFTP at the very least or HTTPS for public files.&lt;/p&gt;
+&lt;p&gt;Lord stop using FTP already. #StopUsingFTP&lt;/p&gt;</description></item><item><title>How I Found An S3 Vulnerability</title><link>https://blog.jasonkuehl.com/p/how-i-found-an-s3-vulnerability/</link><pubDate>Tue, 13 Oct 2020 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/how-i-found-an-s3-vulnerability/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/how-i-found-an-s3-vulnerability/cover.jpg" alt="Featured image of post How I Found An S3 Vulnerability" /&gt;&lt;p&gt;It all started back in 2018 with the below email:&lt;/p&gt;
+&lt;p&gt;I selected the link within the email it brought me to the following URL.&lt;/p&gt;
+&lt;p&gt;Notice it’s a straight S3 link to a public S3 URL, with PII in it. (Take my word on that) :). So I sent this email:&lt;/p&gt;
+&lt;p&gt;To which they responded:&lt;/p&gt;
+&lt;p&gt;Now, remember, this is 2018: right at the height of the S3 bucket madness. You couldn’t go a single month without seeing a new S3 Leak in the headlines. To name a few examples.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Booz Allen Hamilton The U.S. defense contractor&lt;/li&gt;
+&lt;li&gt;U.S. Voter Records A Republican-party backed big data firm&lt;/li&gt;
+&lt;li&gt;Dow Jones &amp;amp; Co Personally identifiable information for 2.2 million people&lt;/li&gt;
+&lt;li&gt;WWE Personally identifiable information about over 3 million wrestling fans&lt;/li&gt;
+&lt;li&gt;Verizon Wireless Personally identifiable information about 6 million people&lt;/li&gt;
+&lt;li&gt;Time Warner Cable Personally identifiable information about 4 million customers&lt;/li&gt;
+&lt;li&gt;Pentagon Exposures Terabytes of information from spying archive, resume for intelligence positions–including security clearance and operations history, credentials and metadata from an intra-agency&lt;/li&gt;
+&lt;li&gt;intelligence sharing platform.&lt;/li&gt;
+&lt;li&gt;National Credit Federation 111GB of detailed financial information&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Luckily, the Org I’m talking about here knew about the issues and was trying to fix it! Great! I sent this follow up:&lt;/p&gt;
+&lt;p&gt;The job was done, right? End of post? You’d be incorrect. Fast-forward to 2020. COVID-19 hit, and I needed to reactivate my membership to get access to this software again.&lt;/p&gt;
+&lt;p&gt;Once again, I got an invoice but this time there is no special link, like the one above. The link is just s3.amazonaws.com/JKLOL/HASH/INVOICE.PDF&lt;/p&gt;
+&lt;p&gt;I remembered that I emailed them about this earlier and was able to find that same email. I also found out later that the ticket I opened in 2018 was never closed. I start to fire off emails:&lt;/p&gt;
+&lt;p&gt;Their response:&lt;/p&gt;
+&lt;p&gt;In my next email I gave them some more details on the issue the same in 2018:&lt;/p&gt;
+&lt;p&gt;To which they responded:&lt;/p&gt;
+&lt;p&gt;Amazon.com: Challenge Accepted MEME Vinyl Decal Sticker- 12&amp;quot; Wide &amp;hellip;&lt;/p&gt;
+&lt;p&gt;“Working As Designed” by leaving PII data in a public S3 path. I didn’t buy what they were selling. I took him up on their offer of providing links/evidence.&lt;/p&gt;
+&lt;p&gt;As I started digging, I began where anyone would. Could I get to the data from the root of the URL? The answer was yes. When I went to the roof of the bucket name, I almost filled my pants when I saw a full XML list of hashes and links to files.&lt;/p&gt;
+&lt;p&gt;(Part of the email I sent with my evidence)&lt;/p&gt;
+&lt;p&gt;It was FILLED with PII. I started digging even more:&lt;/p&gt;
+&lt;p&gt;Credit card and checking data. Not full numbers or accounts (thank Tux). But now I’m really starting to wonder if there is any more data in here?&lt;/p&gt;
+&lt;p&gt;I decided that instead of building a fancy script that would parse the XML and look pretty, I would make it as nasty as possible to pull all the data in the bucket. This was more or less to prove a point that you don’t need a nice script to get access to critical data. With a combination of wget, cat, cut, awk, and sed I was able to do this.&lt;/p&gt;
+&lt;p&gt;I got a complete list of all objects in the open folder. From here I used pdftotext to mass convert all PDF’s into text. I then did searches for all my contact information and found nothing (which made me extremely happy). Then I deleted the rest of the data. However, I did find things like this telling me this company does a lot of other processing for other companies.&lt;/p&gt;
+&lt;p&gt;I took at this data, everything I learned and sent it off to my vendor. This is what I got back 🙂&lt;/p&gt;
+&lt;p&gt;With that, I wait. Working in the same field I do know that these things take time to fix.&lt;/p&gt;
+&lt;p&gt;However, what is the fix? Well, if you don’t use IAC (Infra As Code) it’s 3 clicks to turn off listing objects (Instructions) and just uncheck that button.&lt;/p&gt;
+&lt;p&gt;If applying a policy is more your style here is the basics for a public bucket.
+This will allow for only a get on objects and you need the entire path.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt; 1
+&lt;/span&gt;&lt;span class="lnt"&gt; 2
+&lt;/span&gt;&lt;span class="lnt"&gt; 3
+&lt;/span&gt;&lt;span class="lnt"&gt; 4
+&lt;/span&gt;&lt;span class="lnt"&gt; 5
+&lt;/span&gt;&lt;span class="lnt"&gt; 6
+&lt;/span&gt;&lt;span class="lnt"&gt; 7
+&lt;/span&gt;&lt;span class="lnt"&gt; 8
+&lt;/span&gt;&lt;span class="lnt"&gt; 9
+&lt;/span&gt;&lt;span class="lnt"&gt;10
+&lt;/span&gt;&lt;span class="lnt"&gt;11
+&lt;/span&gt;&lt;span class="lnt"&gt;12
+&lt;/span&gt;&lt;span class="lnt"&gt;13
+&lt;/span&gt;&lt;span class="lnt"&gt;14
+&lt;/span&gt;&lt;span class="lnt"&gt;15
+&lt;/span&gt;&lt;span class="lnt"&gt;16
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;{
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Version&amp;#34;: &amp;#34;2012-10-17&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Statement&amp;#34;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; {
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Sid&amp;#34;: &amp;#34;PublicReadGetObject&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Effect&amp;#34;: &amp;#34;Allow&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Principal&amp;#34;: &amp;#34;&amp;#34;,
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Action&amp;#34;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;s3:GetObject&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ],
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;Resource&amp;#34;: [
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; &amp;#34;arn:aws:s3:::canihavepumpkinspiceyet/&amp;#34;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; }
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; ]
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;With the entire path being required you can hash the locations to your objects like the vendors in the real world example did do. But they made one fatal mistake by leaving that option enabled and thus exposed PII to the internet.&lt;/p&gt;
+&lt;p&gt;I waited one week before asking if they clicked that button.&lt;/p&gt;
+&lt;p&gt;Well. I can see I’m going to have to look at other options and disclose to others I trusted with what I had found. I talked to a few friends of mine in the security world to get some advice. They suggested the following:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Look over the entire site for any kind of company contact or email address.&lt;/li&gt;
+&lt;li&gt;Start looking at LinkedIn and see what you can find about who works at the company to contact them directly&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;After some googling, I found a 3rd option: trying the “basic” email address. Abuse@, Security@, admin@, webmaster@, postmaster@, and privacy@.&lt;/p&gt;
+&lt;p&gt;I did just that. The company had zero contact information on their site which I didn’t really expect. I turned my sights to LinkedIn! From what I learned, this a vendor of the company from whom I’m getting this product. I started looking deeper and I saw that they have a very active security department. I began to mass spam and I got a response! He was able to get me the email of a person that I can send the issue over to, including all the other emails and proof I came up with. Here is my interaction with them:&lt;/p&gt;
+&lt;p&gt;I went to town!&lt;/p&gt;
+&lt;p&gt;Within 2 hours I got this message back from someone else, not a support person (Better…..) and they stated that there will be an update “soon”. Around 6pm I hear the vendor will be deploying a fix by Friday.&lt;/p&gt;
+&lt;p&gt;Oh, the engineers must love me by now. But apparently, cage-rattling seems to have worked.&lt;/p&gt;
+&lt;p&gt;So I waited, and I was happy to find it was ultimately fixed.&lt;/p&gt;
+&lt;p&gt;The moral of the story is if you see a major problem don’t give up until that problem is fixed!&lt;/p&gt;
+&lt;p&gt;I will be writing another post about what I learned and what you need to know if you find something like this or any type of security issue. {link post here}&lt;/p&gt;</description></item><item><title>Learn By Failing</title><link>https://blog.jasonkuehl.com/p/failing-is-learning/</link><pubDate>Tue, 24 Mar 2020 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/failing-is-learning/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/failing-is-learning/cover.jpg" alt="Featured image of post Learn By Failing" /&gt;&lt;h1 id="learn-by-failing"&gt;Learn By Failing
+&lt;/h1&gt;&lt;p&gt;It happened. You finally landed that next large project, the one that you think will defend all of your decisions leading up to this point. The big one that will redeem all of that hard work during the years leading up to it.&lt;/p&gt;
+&lt;p&gt;But the fact is that there is no one project that will do that. No one project will ever do that because that’s not how life works. All these projects really are is a way to gain more experience and learn from them.&lt;/p&gt;
+&lt;p&gt;Unfortunately and despite the actually reality of the situation, there are many people out there that still believe that one large project will make or break their career. And this causes lots of distress and lots of negative self-talk. This is especially true for people working in a start-up and in enterprise business.&lt;/p&gt;
+&lt;p&gt;What follows are sayings (that negative self-talk) that I have heard from many people in my life. I’m going to write about each and give you ways to help better yourself and give you the confidence you need to succeed. While I am no expert, I hope that this can help at least a few people realize that failure is part of life and one project will not make or break you.&lt;/p&gt;
+&lt;h2 id="if-i-fail-im-going-to-be-fired"&gt;If I fail, I’m going to be fired.
+&lt;/h2&gt;&lt;p&gt;I see this a lot especially with new people (Interns, Jrs, and fresh engineers). That being said, I have also seen this with Seniors, but I’ll cover that case as well later.&lt;/p&gt;
+&lt;p&gt;If you’re fresh to the tech world, and you feel that this statement is true where you are, you need to create a workplace that allows you to fail. You need a space that gives you people to learn from and someone to lean on when (yes not “if” but “when”) you do fail.&lt;/p&gt;
+&lt;p&gt;But you’re new, so of course, you’re afraid to do a lot of things; you need someone to ask, “Hey, I’m going to do X. Is that ok?” This is very important for all teams to have great communication. Be it quick, useful meetings, chat rooms, emails, or all of the above, you need to find a place that everyone talks to each other and helps each other through potential failures.&lt;/p&gt;
+&lt;p&gt;If your company is not supportive like this, you need to move on. Nobody needs that negativity in their life. You should never be afraid to fail and your workplace should reflect an attitude of failure is how people learn.&lt;/p&gt;
+&lt;h2 id="if-something-fails-then-clearly-someone-is-to-blame"&gt;If something fails then clearly someone is to blame
+&lt;/h2&gt;&lt;p&gt;Tim broke X or Todd did Y. in reality, rarely are Tim and Todd the issue here. The process is. 99 times out of a 100 something failed because the process wasn’t well defined or was incorrect.&lt;/p&gt;
+&lt;p&gt;Every place you go should have run books or SOPs or some sort of documentation on how a process should be done. If that process is followed and something fails, it is the process that didn’t work, and it needs to be updated.&lt;/p&gt;
+&lt;p&gt;What about the new process or undocumented items you might ask? Then it’s time to build a process and implement it. Before implementing it though, you have to make sure to thoroughly test it and make sure it works. This way others will have one for next time. And then you document it so clearly that anyone could follow it.&lt;/p&gt;
+&lt;p&gt;The worst case scenario of this is when only 1 person knows the process. A process that is in some guy’s head is not a process, that’s a failure point. When Tim needs help with X, but Jenny is on vacation, and you can’t fix X, that’s a problem and it’s nobody’s fault but the company for not having standard written processes. Get all processes on paper to prevent failure like this and remember it’s not your fault if your company hasn’t written processes down.&lt;/p&gt;
+&lt;p&gt;If you fail, you’re weak and not good enough.&lt;/p&gt;
+&lt;p&gt;Imposter syndrome is genuine. It doesn’t matter if you’re new to the field or have been doing this for years. You get this feeling that you are somehow inferior because you failed.&lt;/p&gt;
+&lt;p&gt;How do you bust that feeling? Well, everyone has something that helps, but surrounding yourself with a network of people to build you up and remind you that failure just means you are learning is very important. If you don’t have that network of people, you feel like you’re lost at sea with no land around you. You need to build that support structure.&lt;/p&gt;
+&lt;h2 id="denial-of-mistake-making"&gt;Denial of Mistake Making
+&lt;/h2&gt;&lt;p&gt;The biggest problem with people and companies is is denying when you have made a mistake, or a project didn’t go as planned. I’ve seen many a ship sink on this iceberg.&lt;/p&gt;
+&lt;p&gt;This is a hard thing to teach people because most people (especially Americans) have been programmed to think that failure is never an option and that failure will lead to my first point (being fired).&lt;/p&gt;
+&lt;p&gt;However, you need to fail to learn so that your project can go on. No project ever works the first time. I mean think of the greatest scientific achievements in history: all of them came about through trial and error.&lt;/p&gt;
+&lt;p&gt;That being said, fear of failure is so engrained into our society that it is very hard to break people of that mindset. There is no cookbook that helps people understand this. It takes working in a positive work environment to reassure you that failing is just part of the process. It’s with that reassurance that you can build up your confidence.&lt;/p&gt;
+&lt;p&gt;So Who is Causing These Issues and Feelings to Occur?&lt;/p&gt;
+&lt;p&gt;So for the most part people’s outlook of the workplace is influenced by what is around them. So, besides societal pressure to never fail, who is perpetuating this false claim that failure is the worst thing ever and that you will be fired and branded a loser if you fail?&lt;/p&gt;
+&lt;p&gt;Toxic people: They have one goal, suck your life away. They don’t care about you and will only bring you misery. They only care about themselves.&lt;/p&gt;
+&lt;h2 id="how-to-id-these-kinds-of-people"&gt;How to ID these kinds of people?
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;You’re emotionally affected by their drama.&lt;/li&gt;
+&lt;li&gt;You dread (or fear) being around them.&lt;/li&gt;
+&lt;li&gt;You’re exhausted, or you feel angry while you’re with them or after your interaction.&lt;/li&gt;
+&lt;li&gt;You feel bad or ashamed about yourself.&lt;/li&gt;
+&lt;li&gt;You’re stuck in a cycle of trying to rescue, fix, or care for them.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The sooner you remove them from your life, the sooner you can work on building up your confidence again.&lt;/p&gt;
+&lt;h2 id="toxic-space"&gt;Toxic Space
+&lt;/h2&gt;&lt;p&gt;If you see these run, don’t look back, and move on. Always remember that you can leave at any time, you don’t owe any company anything.&lt;/p&gt;
+&lt;p&gt;How to ID these kinds of places?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;You’re told to feel, “lucky you have a job.”…&lt;/li&gt;
+&lt;li&gt;Poor communication.&lt;/li&gt;
+&lt;li&gt;Everyone has a bad attitude. …&lt;/li&gt;
+&lt;li&gt;There’s always office drama. …&lt;/li&gt;
+&lt;li&gt;Dysfunction reigns. …&lt;/li&gt;
+&lt;li&gt;You have a tyrannical boss. …&lt;/li&gt;
+&lt;li&gt;You feel in your gut that something is off.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The power of “no” is amazing, and you shouldn’t be afraid to use it. You have a choice, and you know better than all that your priorities are.&lt;/p&gt;
+&lt;h2 id="poor-leaders"&gt;Poor Leaders
+&lt;/h2&gt;&lt;p&gt;Just like toxic people, these are the people who will help drive your future in your career.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Oppositional behavior&lt;/li&gt;
+&lt;li&gt;Makes you feel terrible for over simple mistake&lt;/li&gt;
+&lt;li&gt;Plays power politics&lt;/li&gt;
+&lt;li&gt;Doesn’t tech or let you learn&lt;/li&gt;
+&lt;li&gt;Abuse of the disciplinary system&lt;/li&gt;
+&lt;li&gt;bullying, gaslighting, sexists&lt;/li&gt;
+&lt;li&gt;course causes workplace division&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="what-should-your-leadership-actually-be-doing"&gt;What should your leadership actually be doing?
+&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;Seeing a potential vision on your future, asking what you want your future to be, and helping to shape it to meet both of your needs.&lt;/li&gt;
+&lt;li&gt;Giving you an ability to drive your own projects you thought of.&lt;/li&gt;
+&lt;li&gt;Supports you when you need it&lt;/li&gt;
+&lt;li&gt;Being there for you when you need someone to talk to or toss ideas off of.&lt;/li&gt;
+&lt;li&gt;You can tell them no and have a talk about why you said no.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="what-can-you-do-right-now"&gt;What Can You Do Right Now
+&lt;/h2&gt;&lt;p&gt;We’ve talked about what failure types and people who are not supportive and ways to identify them. But what can you do to build your empire and get that reinforcement if it’s not in the workplace and find a place where it is?&lt;/p&gt;
+&lt;p&gt;Building a network. : Go out and meet others in your field and talk shop. You will figure out you’re not alone and that others might have similar issues.&lt;/p&gt;
+&lt;p&gt;Go to fun events: Go to events that look like fun to meet others and build upon that network. Even if that’s something you never done before. Build your community or join one with positive people.&lt;/p&gt;
+&lt;p&gt;Start doing fun in field projects: If you really like the work you are doing, start practicing outside of work! To be good at something, it needs to be close to second nature. Start doing in-field projects outside of work or if your work has a “playpen” where you can build and make things use it. Check the areas for a local makerspace, too, as these are great places to find others with your passions.&lt;/p&gt;
+&lt;h2 id="conclusion"&gt;Conclusion
+&lt;/h2&gt;&lt;p&gt;Work and people can be a chore in and of itself. It can trigger anxiety, stress, and feeling of dread some (if not most) days. You need your time to decompress. Maybe that is time with your significant other, playing at a makerspace, out with friends, building a car, writing, drawing, video games; whatever it might be, think about yourself and what you like to do. Whatever your life stress is, think about yourself. Your health is worth more than ending up in the ER because of a panic attack (True Story).&lt;/p&gt;
+&lt;p&gt;Why am I talking about all this? Why does this even need to be informed about? People think “failure is a sin” is normal, and it’s not. If you’re reading this is going, “Wow, I see this at work” or “wow, this is happening to me now” it’s because this happens daily to a lot of people. It’s not until you identify what happening that you can work on the way to resolve it. Unfortunately, some companies and people are so set in their ways that it can feel like moving a Stubborn mule to get any real change to happen. They’re not going to change, and these kinds of people don’t want too. You have a choice and a voice to do what you want to.&lt;/p&gt;
+&lt;p&gt;Don’t let others think they can control you.&lt;/p&gt;</description></item><item><title>ASA Any Connect Loops</title><link>https://blog.jasonkuehl.com/p/asa-any-connect-loops/</link><pubDate>Tue, 12 Jun 2018 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/asa-any-connect-loops/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/asa-any-connect-loops/cover.jpg" alt="Featured image of post ASA Any Connect Loops" /&gt;&lt;p&gt;#ASA Anyconnect Loops&lt;/p&gt;
+&lt;p&gt;A while ago, we installed a new 5512 with the latest ISO from our old 5510, which was running version 7. Yes, it was long overdue for an upgrade.. The cut over was seamless. I would connect with our new AnyConnect profiles, and AD integration was happy; packets were flowing, and it was time for a beer. Nothing was broken in testing, and everyone was delighted. I heard people talking about Slack not working on the VPN, but I figured it was someone pulling my leg; I never heard anything else after that.&lt;/p&gt;
+&lt;p&gt;Still no real complaints, but more about slack on the VPN. Several days later, I used the ASDM to check on the ASA.&lt;/p&gt;
+&lt;p&gt;(High CPU)
+High CPU and host 10.18.254.255 generated too much traffic. At this point, I had no clue what was going on.&lt;/p&gt;
+&lt;p&gt;Upon hearing about the high CPU and excessive traffic from host 10.18.254.255, I immediately delved into testing, double-checking, and triple-checking our configuration. Despite my initial suspicion of a routing loop, I conducted a thorough investigation, leaving no stone unturned. Our team&amp;rsquo;s dedication to resolving the issue was unwavering.&lt;/p&gt;
+&lt;p&gt;Around day 2, we started pulling Wireshark traces from the Meraki ports. Now, we begin to see the funky stuff. Five hosts are just hammering NetBIOS.&lt;/p&gt;
+&lt;p&gt;I began researching VPN Filters to resolve the issue.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;group-policy Derrp attributes
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; VPN filter value inside
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip object vpnclients host 10.18.254.255
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip object vpnclients host 10.18.254.1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip host 10.18.254.255 object vpnclients
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended permit ip any any log debugging
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip any any
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;I looked into VPN filters to block communication to and from the NetBIOS. The CPU dropped like a rock. We thought the issue was fixed and moved on to the next. We then began investigating the Slack issue. Slack was not connecting on the VPN. When you ran the Slack test, WebSockets were failing. We ran Wireshark on a host where Slack was installed and saw a ton of data. Retrans, out-of-place packets, and traffic that didn&amp;rsquo;t belong to the host were sent to the host.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;route inside_transit 10.18.0.0 255.255.0.0 10.18.1.1 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;route Null0 10.18.254.0 255.255.255.0 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;route inside_transit 0.0.0.0 0.0.0.0 10.18.1.1 tunneled
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;After implementing the necessary measures, including adding &lt;code&gt;route Null0 10.18.254.0 255.255.255.0 1&lt;/code&gt; and shutting down the interface, we were able to resolve the Slack connectivity issue. This successful resolution brought a sense of relief, and we could see that the traffic was flowing smoothly.&lt;/p&gt;
+&lt;p&gt;From Cisco regarding the reason for this version of IOS.&lt;/p&gt;
+&lt;p&gt;When you send traffic to a Null0 interface, it causes the packets destined to the specified network to be dropped. This feature is useful when you configure Remotely Triggered Black Hole (RTBH) for Border Gateway Protocol (BGP). In this situation, if you configure a route to Null0 for the remote access client subnet, it forces the ASA to drop traffic destined to hosts in that subnet if a more specific route (provided by Reverse Route Injection) is not present.&lt;/p&gt;
+&lt;p&gt;The Cisco Article about AnyConnect Routing Loops
+&lt;a class="link" href="https://www.cisco.com/c/en/us/support/docs/security/asa-5500-x-series-next-generation-firewalls/116170-probsol-asa-00.html" target="_blank" rel="noopener"
+&gt;https://www.cisco.com/c/en/us/support/docs/security/asa-5500-x-series-next-generation-firewalls/116170-probsol-asa-00.html&lt;/a&gt;&lt;/p&gt;</description></item><item><title>Archives</title><link>https://blog.jasonkuehl.com/archives/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/archives/</guid><description/></item><item><title>Links</title><link>https://blog.jasonkuehl.com/links/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/links/</guid><description>&lt;p&gt;To use this feature, add &lt;code&gt;links&lt;/code&gt; section to frontmatter.&lt;/p&gt;
+&lt;p&gt;This page&amp;rsquo;s frontmatter:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-yaml" data-lang="yaml"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="nt"&gt;links&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;title&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;GitHub&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;description&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;GitHub is the world&amp;#39;s largest software development platform.&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;website&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;https://github.com&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;image&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;- &lt;span class="nt"&gt;title&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;TypeScript&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;description&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;website&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;https://www.typescriptlang.org&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="nt"&gt;image&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt;&lt;span class="w"&gt; &lt;/span&gt;&lt;span class="l"&gt;ts-logo-128.jpg&lt;/span&gt;&lt;span class="w"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;image&lt;/code&gt; field accepts both local and external images.&lt;/p&gt;</description></item><item><title>Search</title><link>https://blog.jasonkuehl.com/search/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/search/</guid><description/></item></channel></rss>

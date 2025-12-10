@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Networking on Jason Kuehl Blog</title><link>https://blog.jasonkuehl.com/categories/networking/</link><description>Recent content in Networking on Jason Kuehl Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sat, 29 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.jasonkuehl.com/categories/networking/index.xml" rel="self" type="application/rss+xml"/><item><title>Designing DMZs for Cloud</title><link>https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./</link><pubDate>Sat, 29 Nov 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./cover.jpg" alt="Featured image of post Designing DMZs for Cloud" /&gt;&lt;h1 id="rfc6598-and-dmz-understanding-the-crucial-role-in-network-architecture"&gt;RFC6598 and DMZ: Understanding the Crucial Role in Network Architecture.
+&lt;/h1&gt;&lt;p&gt;I work with many vendors that need to connect physical equipment in a warehouse setting. I also work with vendors who connect non-cloud services (the big three: AWS, Azure, GCP) to one of the big three. I&amp;rsquo;ll discuss what I’ve learned and designed over the years, with the hope of helping others with some of the headaches you might encounter.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s introduce a new type of DMZ called the &amp;lsquo;Partner&amp;rsquo;. This is a logical network specifically designed for vendors, partners, and other on-premises devices that we do not want to be part of our corporate network. It&amp;rsquo;s distinct from the traditional DMZ for corporate servers that may host services accessible to the public.&lt;/p&gt;
+&lt;h1 id="90-of-vendors-and-partners-need-the-following"&gt;90% of vendors and partners need the following
+&lt;/h1&gt;&lt;ul&gt;
+&lt;li&gt;Internet access&lt;/li&gt;
+&lt;li&gt;Access to specific systems&lt;/li&gt;
+&lt;li&gt;Remote access to equipment (50/50)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The remaining 10% are what we call &amp;lsquo;wild card 1-offs.&amp;rsquo; These are unique situations that you can&amp;rsquo;t always plan for or predict. Dealing with these instances requires flexibility and adaptability.&lt;/p&gt;
+&lt;h2 id="practicality-in-design-ensuring-seamless-vendor-integration-in-the-partner-dmz"&gt;Practicality in Design: Ensuring Seamless Vendor Integration in the Partner DMZ.
+&lt;/h2&gt;&lt;p&gt;&lt;a class="link" href="https://datatracker.ietf.org/doc/html/rfc6598" target="_blank" rel="noopener"
+&gt;https://datatracker.ietf.org/doc/html/rfc6598&lt;/a&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;IPv4 /10 address block to be used as Shared Address Space to accommodate the needs of Carrier- Grade NAT (CGN) devices. It is anticipated that Service Providers will use this Shared Address Space to number the interfaces that connect CGN devices to Customer Premises Equipment (CPE). &lt;br&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Many telcos will use this range for modems, cellphones, or direct connections. In this design, we will use it for all our vendors&amp;rsquo; and partners&amp;rsquo; on-site equipment. This will allow them to run any local network on their equipment as needed, without trampling on any RFC 1918 networks you might have behind your firewall.&lt;/p&gt;
+&lt;h2 id="cloud--partner--onprem-simple-design"&gt;Cloud / Partner / Onprem Simple Design
+&lt;/h2&gt;&lt;p&gt;&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing.jpg"
+width="992"
+height="812"
+srcset="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing_hu_f916834246d60624.jpg 480w, https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./AWS-DMZ-Onprem-Drawing_hu_2e337a95fbf02257.jpg 1024w"
+loading="lazy"
+alt="Alt text"
+class="gallery-image"
+data-flex-grow="122"
+data-flex-basis="293px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Firewall to trusted network, vpn to cloud, DMZ corp, and DMZ partner.&lt;/p&gt;
+&lt;p&gt;This design enables the partner to communicate with specific services in our cloud or on-premises. These are locked-down ACLS with accounts limited to what they need access to.&lt;/p&gt;
+&lt;h2 id="cloud-dmz-design"&gt;Cloud DMZ Design.
+&lt;/h2&gt;&lt;p&gt;If you apply what we just talked about to the cloud, it looks almost the same, but depending on the cloud, you have different options. I&amp;rsquo;m only going to use things that each of the big ones will have.&lt;/p&gt;
+&lt;p&gt;VPCs, Local Balances, Health Checks, ACLs, and Route tables. All of the big 3 have these, and there are plenty of other services in each cloud you can also use. I plan to talk about an AWS-specific design in the future.&lt;/p&gt;
+&lt;p&gt;&lt;img src="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only.jpg"
+width="1030"
+height="402"
+srcset="https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only_hu_24c40f33e74fdb38.jpg 480w, https://blog.jasonkuehl.com/p/building-dmzs-in-cloud-why-just-like-ivp4-dmzs-are-not-no-where-just-reimaged./Draw-IO-Drawings-Partner-DMZ-cloud-Only_hu_733cc5d040dd7e73.jpg 1024w"
+loading="lazy"
+alt="Alt text"
+class="gallery-image"
+data-flex-grow="256"
+data-flex-basis="614px"
+&gt;&lt;/p&gt;
+&lt;p&gt;Several VPCs connecting to 1 VPC give a route table with LoadBalancers that make the connection. On the other side is a VPN from the partner, and they have services that connect to a load balancer. Make this like the AAWSPartnerconnection for the session.&lt;/p&gt;
+&lt;p&gt;In this example, we have a partner providing two services, and we, the customer, are also providing them access to an internal service. Think of the load balancers as the endpoints for all access. This allows us to set ACLs and health checks for monitoring services in that cloud. The Vendor/Partner here only has routes to the 100.64 range and can&amp;rsquo;t talk to any other VPC.&lt;/p&gt;
+&lt;p&gt;Empowerment through Control: The Simple Designs that Put You in Charge of the Partner/Vendor Network.&lt;/p&gt;
+&lt;p&gt;Keeps the network secure
+Allows for total visibility into each vendor/partner
+Limit access and use the least privilege
+Prevent IP trampling of internal networks.
+Any cloud or on-premises firewall can do this.
+The goal is to give you an idea and expand on what works best for your company or personal use. This may not work for everyone, but I hope to give someone that light bulb moment to build something that works for them!&lt;/p&gt;
+&lt;p&gt;Reference&lt;/p&gt;
+&lt;p&gt;Kuarsingh, V., Weil, J., Donley, C., Liljenstolpe, C., &amp;amp; Azinger, M. (2012). IANA-Reserved IPv4 Prefix for Shared Address Space. &lt;a class="link" href="https://doi.org/10.17487/rfc6598" target="_blank" rel="noopener"
+&gt;https://doi.org/10.17487/rfc6598&lt;/a&gt;&lt;/p&gt;</description></item><item><title>Stop Using ISP Provided DNS</title><link>https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/</link><pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/cover.jpg" alt="Featured image of post Stop Using ISP Provided DNS" /&gt;&lt;p&gt;ISP URL Filtering and Blocking&lt;/p&gt;
+&lt;p&gt;Most, if not all, ISPs offer URL-based protections. These are mostly automated systems that decide if a site is malicious or not. To name just a few&lt;/p&gt;
+&lt;p&gt;Xfinity xFi Advanced Security
+Comcast Xfinity xFi Advanced Security
+Comcast Business SecurityEdge
+Cox Advanced Security
+spectrum Site Shield
+ATT Smart Home
+Tmobile Web Guard&lt;/p&gt;
+&lt;p&gt;The major issue with most of these systems is their automated nature in identifying what is, in quotes, “Bad.” See my post here about Xfinity blocking my Corp VPN Several times over the years and never getting a reason why. Recently, I assisted a friend with transferring his online store from Squarespace to Shopify, and users on the spectrum received a message about a suspicious site being blocked. There was no reason as to why, or what category, just blocked.&lt;/p&gt;
+&lt;p&gt;Check out this site at &lt;a class="link" href="https://rocketprops.store/" target="_blank" rel="noopener"
+&gt;https://rocketprops.store/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Now, what is the solution? Most of these companies have a procedure to remove the block, but that can take up to one week. Its a really shiity process and unless you’re technically enough, you might not know what to do as an owner of a website or other service that get blocked by an ISP like this. And, they dont need to remove it.&lt;/p&gt;
+&lt;p&gt;Knowing what you know about this, what can you do? Well, you have 3 total options: paid service, a non-paid service that targeted, and build something yourself.&lt;/p&gt;
+&lt;p&gt;Paid Options&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://meetcircle.com/" target="_blank" rel="noopener"
+&gt;https://meetcircle.com/&lt;/a&gt;
+&lt;a class="link" href="https://nextdns.io/" target="_blank" rel="noopener"
+&gt;https://nextdns.io/&lt;/a&gt;
+&lt;a class="link" href="https://controld.com/plans?step=plans" target="_blank" rel="noopener"
+&gt;https://controld.com/plans?step=plans&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Free Targeted filtering options
+&lt;a class="link" href="https://signup.opendns.com/homefree/" target="_blank" rel="noopener"
+&gt;https://signup.opendns.com/homefree/&lt;/a&gt;
+Quad9 for malicious domain blocking&lt;/p&gt;
+&lt;p&gt;.cloudflare.com/introducing-1-1-1-1-for-families/
+&lt;a class="link" href="https://one.one.one.one/family/" target="_blank" rel="noopener"
+&gt;https://one.one.one.one/family/&lt;/a&gt;
+Malware Blocking Only
+Primary DNS: 1.1.1.2
+Secondary DNS: 1.0.0.2
+Malware and Adult Content
+Primary DNS: 1.1.1.3
+Secondary DNS: 1.0.0.3
+These are self-hosted services that you can run to give you that control, but they are more advanced to set up and maintain, and you’re the maintainer.&lt;/p&gt;
+&lt;p&gt;Pihole
+AdGuard&lt;/p&gt;</description></item><item><title>Xfinity Blocking URLs For No Reason</title><link>https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/</link><pubDate>Wed, 31 Jan 2024 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/cover.jpg" alt="Featured image of post Xfinity Blocking URLs For No Reason" /&gt;&lt;h1 id="xfinty-url-filtering-"&gt;Xfinty URL Filtering &amp;gt;:(
+&lt;/h1&gt;&lt;p&gt;There have been a few instances in which Xfinity has blocked my company’s VPN URL. Xfinity needs a better process for unblocking that URL, but that is a different rant. You can not open tickets with them if you’re not an Xfinity customer. This makes no sense, and it’s infuriating. Xfinity will not tell us why or how the block was triggered. We were told on the 1st and 2nd time it happened it was “a known issue,” and it was resolved, but we’ve had other issues.&lt;/p&gt;
+&lt;p&gt;Suppose you find yourself googling and end up here. Here is what we did to fix this and what to look for.&lt;/p&gt;
+&lt;p&gt;It all started when some users couldn’t connect to the VPN. After some troubleshooting, we discovered that it was only affecting Xfinity users. Upon further investigation, we found that all Xfinity users had Xfinity advanced security enabled, blocking our VPN URL under the “blocked” tab. Even when a user removed the block, it would reappear in the block list after an hour. We had to request users to remove the block and disable Xfinity advanced security entirely to resolve the issue.&lt;/p&gt;
+&lt;p&gt;The next time we happened, Xfinity pushed an update that re-enabled Xfinity’s advanced security; however, users didn’t see our URL blocked. Xfinity told our users it was blocked. You’ll need to use this site &lt;a class="link" href="https://spa.xfinity.com/advanced-security?faq=advanced-security" target="_blank" rel="noopener"
+&gt;https://spa.xfinity.com/advanced-security?faq=advanced-security&lt;/a&gt; to request the URL block is removed. It says 3-4 business days. It won’t matter how much you call, complain, or reps you talk to. The process is terrible, and Xfinity will not allow you to speak with an engineer. You’re stuck with tech support Tier 1 and 2 only. Who can only update the tickets on the SPA side.&lt;/p&gt;
+&lt;p&gt;Xfinity will not tell us why this happened, so we took measures and made backup plans.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;The Xfinity block blocked the entire TLD, not just the subdomain we found in some instances. We made a backup VPN URL under a different TLD to allow our users to connect. If we used a VPN.jasonkuehl.com, we made vpn.jasonkuehl.blah. This was a massive solution for us, allowing all blocked Xfinity users to connect.
+We made documentation to show users how to unblock our URL from the Xfinity app and how to turn off Xfinity’s advanced security.
+We request that users open tickets with Xfinity and provide them to us.
+I sent in a SPA request to unblock the URL.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you found this frustrating and wanted to smash things, I did, too. The problem is this is 100% out of your control. If you were ever affected by Xfinity, create the backup VPN URL. It will allow all your users to connect and work.&lt;/p&gt;
+&lt;p&gt;Technical details.&lt;/p&gt;
+&lt;p&gt;If you try to hit the URL, you’ll see this. It makes you think that your SSL might be messed up or broken. But if you check on other ISPs, fine.&lt;/p&gt;
+&lt;p&gt;It works fine if you hit your VPN without the cert and do it directly to the IP. But using the URL will fail, not connect, and can’t hit the destination.&lt;/p&gt;</description></item><item><title>RCN Business Cable Internet Is Not Business Ready</title><link>https://blog.jasonkuehl.com/p/rcn-business-cable-internet-is-not-business-ready/</link><pubDate>Sat, 30 Apr 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/rcn-business-cable-internet-is-not-business-ready/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/rcn-business-cable-internet-is-not-business-ready/cover.jpg" alt="Featured image of post RCN Business Cable Internet Is Not Business Ready" /&gt;&lt;h1 id="before-we-start"&gt;Before we start:
+&lt;/h1&gt;&lt;p&gt;My journey with RCN over the past 6 years as a residential customer was great. I only left them due to I’m moving into a new house, and they service the area. I also what to say I’m only talking about their Cable Business internet, not any other part of their business they offer as I’ve never used their Ethernet or Fiber in business before.&lt;/p&gt;
+&lt;p&gt;My friend I wanted business internet with enough public IP space we both could use. We both liked RCN as residential users and gave them a ring. For a 2-year contract, we got 500/60 for 90 dollars a month with a /28 for 14 external IPs. Not too bad of a price and service and uptime wise, RCN was fine for our needs. We had only 1 outage in that 2 years that was rain-related.&lt;/p&gt;
+&lt;p&gt;I run a larger Lab out of a Makerspace in Somerville MA which will soon be moving into my new house :). Here I test and do a lot of different things.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Testing out new technologies I can get my hands on&lt;/li&gt;
+&lt;li&gt;GNS3 Lab&lt;/li&gt;
+&lt;li&gt;Full VMware and ProxMox Setup&lt;/li&gt;
+&lt;li&gt;Anything Docker related&lt;/li&gt;
+&lt;li&gt;CICD (Jenkins or bla)&lt;/li&gt;
+&lt;li&gt;Remote Coding&lt;/li&gt;
+&lt;li&gt;Test AD Environment&lt;/li&gt;
+&lt;li&gt;Game ServersEtc, the list goes on&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id="with-that-out-of-the-way-lets-start-down-the-road-of-the-most-bizarre-issues-ive-ever-had-with-an-isp"&gt;With that out of the way let’s start down the road of the most bizarre issues I’ve ever had with an ISP.
+&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;DHCP For Static IPS?
+From the start, we had odd issues, and it was always around our static IP Block. After an entire month of working with RCN on what was happening, we found out that RCN provides your Static IP block over DHCP. This blows my mind a little and I asked them why. They said it was to help customers who were not “tech” savvy. I asked them to disable it for our block and was told no as it was harder on the techs to debug an issue if we leave as a customer, and they reassign the block. If that new customer requests static IPS, and it’s not auto-assigned for them, it will create a ticket for them.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id="thats-not-what-static-means"&gt;Thats not what static means..
+&lt;/h2&gt;&lt;p&gt;When I asked how are these static IPs when it’s in a DHCP scope I was told it’s static to the modem only. I will always have these IPs on our modem. Several calls to RCN later I never got them to disable this it was an actual nightmare to debug issues.&lt;/p&gt;
+&lt;h2 id="dont-plug-in-any-network-device-setup-to-dhcp-mode"&gt;Don’t Plug In Any Network Device Setup to DHCP Mode
+&lt;/h2&gt;&lt;p&gt;Our setup was as basic as it gets. One cable modem connected to an edge switch with a single VLAN. From here all edge devices would connect. The problem? Most network devices come with DHCP mode enabled on the outside interface meaning it would get a DHCP IP address. The head office will hand out the first IP in the list. If something was assigned to .2 “staticly” it will be overridden by the head office and that new device’s mac address (The one on DHCP) will be on file for that IP. You cant reboot the cable modem to fix this. You need to call RCN, get to a level 2 tech who can log into that piece of equipment to release the DHCP request. Then you can reboot the cable modem to get your original device working. I made this mistake once, and it took about 2 hours working with RCN to get resolved.&lt;/p&gt;
+&lt;p&gt;To be fair, this is how DHCP works. The DHCP Server will not know about staticly set IP addresses, but RCN will not do reservations. I tried for my entire block down to single IPs with no luck. Our workaround in case this ever happened again? We skipped the first IP in the block making it unable for an opps scenario. RCN tells you that you should be using DHCP and not staticly setting up IPS. However, that is also terrible. The head office only keeps the address logged for 2 hours (I was told). If you had an issue where your devices were offline for 3-4 hours on DHCP their records would no longer be at the head office. If you had 2 devices .2 and .3 on DHCP device1 had.2 and device 2 had.3 if device 2 booted faster it would then be .2 and device1 would be.3 See the example Below.&lt;/p&gt;
+&lt;h2 id="device-failover-wont-work"&gt;Device Failover Won’t Work
+&lt;/h2&gt;&lt;p&gt;On top of how static IPS work within RCN, we found a new issue. On a device failover, the cable modem caches the mac address of the old device. What I can see in Wireshark is the cable modem still saying that the old mac address had that IP. It wont work without a reboot. I’ve done this same setup on Comcast business, Xfinity, and different Cell Carriers. The crazy part is, if I switch my firewalls to DHCP mode on the external interface it works fine. When I call RCN, they only say Active/Active or Active/passive is not supported on cable.&lt;/p&gt;
+&lt;h2 id="customer-name-change"&gt;Customer Name Change
+&lt;/h2&gt;&lt;p&gt;This was the most annoying part of all of this. I decided to move my lab into my new house and need to change the names on the account over to my friend. We got the name change forum and I asked if “Anything else is needed or to worry about” RCN said no that the account would move over to him as is. That was not the case. On the account change, we lost our static IP block. It took over 4 hours for RCN to fix the issue. According to RCN, I should have told them we had a static IP block. Because they treated it as a new account. After talking to a supervisor I was told “It’s the customer’s responsibly to let us know about their static ranges” Below you can see the only questions I was ever asked.&lt;/p&gt;
+&lt;h2 id="network-jank"&gt;Network Jank.
+&lt;/h2&gt;&lt;p&gt;This was a rollercoaster of a ride and at the end of the day, I can’t recommend RCN to anyone for business. They have both process issues and will bring technical challenges to the customer if they expect things to work as it does with other carriers.&lt;/p&gt;</description></item><item><title>Dell N Series – No Free IP Address To Offer In Pool</title><link>https://blog.jasonkuehl.com/p/dell-n-series-1/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/dell-n-series-1/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/dell-n-series-1/cover.jpg" alt="Featured image of post Dell N Series – No Free IP Address To Offer In Pool" /&gt;&lt;p&gt;Dell N Series – No Free IP Address To Offer In Pool
+Blog Networking
+October 13, 2020 jasonkuehl&lt;/p&gt;
+&lt;p&gt;At this site we installed a new Dell N Series core replacing a bunch of old junk. As I’m doing the new build I moved all the DHCP requests to the core and away from windows which took care of all the DHCP requests. This was on a off day with no one around (Duh replacing the core) and I was not really worried. After about 30 minutes my console is filling up with the below messages.&lt;/p&gt;
+&lt;p&gt;Note: Yes it’s VLAN1 it predates me and is waaay too messy to remove in a weekend.&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Error “No Free IP Address To Offer in pool VLAN1”&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Start freaking out&lt;/em&gt; Did I fill the pool already? How can that be?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;show ip dhcp binding
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Everything looks fine, and the pool is not even close to full… To the Logs!&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;show logs
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;I’ve seen this before in Cisco where a device holds onto a DHCP address. You need to track down the MAC and give the device a reboot. After the reboot (of the device) these errors should go away.&lt;/p&gt;
+&lt;p&gt;Full Image&lt;/p&gt;</description></item><item><title>Google Geo Location Issues</title><link>https://blog.jasonkuehl.com/p/google-geo-location-issues/</link><pubDate>Sun, 06 Mar 2022 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/google-geo-location-issues/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/google-geo-location-issues/cover.jpg" alt="Featured image of post Google Geo Location Issues" /&gt;&lt;h1 id="google-geo-datebase"&gt;Google Geo Datebase
+&lt;/h1&gt;&lt;p&gt;Google runs its database like ARIN on who owns what IP and sets a location. If you look up an IP owner in ARIN, you’ll see the name, address, and IP location. Google does this as well, but it’s private.&lt;/p&gt;
+&lt;p&gt;This becomes important when your Google page suddenly shows Belarus. You need to contact Google or ARIN. You’ll know it’s a Google issue if you don’t see this issue in Bing or DuckDuckGo.&lt;/p&gt;
+&lt;p&gt;If you’re reading this, your Google location now shows a different country or area from your owned IP location in ARIN. Google has changed this in their database. The process to fix this will take 1–2 months. You need to open a ticket with &lt;a class="link" href="mailto:noc@google.com" &gt;noc@google.com&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;If you’re an ISP, you can use &lt;a class="link" href="https://isp.google.com/" target="_blank" rel="noopener"
+&gt;https://isp.google.com/&lt;/a&gt;. Anyone who runs a VPN for a company website or other service must open a ticket with the NOC. If you can get an ISP account, you can control IP address locations.&lt;/p&gt;
+&lt;p&gt;I got this information from the &lt;a class="link" href="mailto:nanog@nanog.org" &gt;nanog@nanog.org&lt;/a&gt; mailing list. I contacted a Google Ops Engineer on this list, who told me to use &lt;a class="link" href="mailto:noc@google.com" &gt;noc@google.com&lt;/a&gt; for all Google-related issues. They were able to send my issue over to the correct department. For all my funky-related network issues, I posted them to this list to get help from other engineers.&lt;/p&gt;
+&lt;p&gt;See the below response from Google.&lt;/p&gt;
+&lt;p&gt;At the end of the day, a bug in the service saw traffic from Belarus, and Google started to assume this was the main location where that IP belonged. After talking with other engineers from other companies, this is “normal” when you start to branch out in hiring from other countries. However, it would never be an issue if Google just used the ARIN database like everyone else.&lt;/p&gt;</description></item><item><title>ASA Any Connect Loops</title><link>https://blog.jasonkuehl.com/p/asa-any-connect-loops/</link><pubDate>Tue, 12 Jun 2018 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/asa-any-connect-loops/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/asa-any-connect-loops/cover.jpg" alt="Featured image of post ASA Any Connect Loops" /&gt;&lt;p&gt;#ASA Anyconnect Loops&lt;/p&gt;
+&lt;p&gt;A while ago, we installed a new 5512 with the latest ISO from our old 5510, which was running version 7. Yes, it was long overdue for an upgrade.. The cut over was seamless. I would connect with our new AnyConnect profiles, and AD integration was happy; packets were flowing, and it was time for a beer. Nothing was broken in testing, and everyone was delighted. I heard people talking about Slack not working on the VPN, but I figured it was someone pulling my leg; I never heard anything else after that.&lt;/p&gt;
+&lt;p&gt;Still no real complaints, but more about slack on the VPN. Several days later, I used the ASDM to check on the ASA.&lt;/p&gt;
+&lt;p&gt;(High CPU)
+High CPU and host 10.18.254.255 generated too much traffic. At this point, I had no clue what was going on.&lt;/p&gt;
+&lt;p&gt;Upon hearing about the high CPU and excessive traffic from host 10.18.254.255, I immediately delved into testing, double-checking, and triple-checking our configuration. Despite my initial suspicion of a routing loop, I conducted a thorough investigation, leaving no stone unturned. Our team&amp;rsquo;s dedication to resolving the issue was unwavering.&lt;/p&gt;
+&lt;p&gt;Around day 2, we started pulling Wireshark traces from the Meraki ports. Now, we begin to see the funky stuff. Five hosts are just hammering NetBIOS.&lt;/p&gt;
+&lt;p&gt;I began researching VPN Filters to resolve the issue.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;span class="lnt"&gt;4
+&lt;/span&gt;&lt;span class="lnt"&gt;5
+&lt;/span&gt;&lt;span class="lnt"&gt;6
+&lt;/span&gt;&lt;span class="lnt"&gt;7
+&lt;/span&gt;&lt;span class="lnt"&gt;8
+&lt;/span&gt;&lt;span class="lnt"&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;group-policy Derrp attributes
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt; VPN filter value inside
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip object vpnclients host 10.18.254.255
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip object vpnclients host 10.18.254.1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip host 10.18.254.255 object vpnclients
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended permit ip any any log debugging
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;access-list inside extended deny ip any any
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;I looked into VPN filters to block communication to and from the NetBIOS. The CPU dropped like a rock. We thought the issue was fixed and moved on to the next. We then began investigating the Slack issue. Slack was not connecting on the VPN. When you ran the Slack test, WebSockets were failing. We ran Wireshark on a host where Slack was installed and saw a ton of data. Retrans, out-of-place packets, and traffic that didn&amp;rsquo;t belong to the host were sent to the host.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;div class="chroma"&gt;
+&lt;table class="lntable"&gt;&lt;tr&gt;&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code&gt;&lt;span class="lnt"&gt;1
+&lt;/span&gt;&lt;span class="lnt"&gt;2
+&lt;/span&gt;&lt;span class="lnt"&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class="lntd"&gt;
+&lt;pre tabindex="0" class="chroma"&gt;&lt;code class="language-fallback" data-lang="fallback"&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;route inside_transit 10.18.0.0 255.255.0.0 10.18.1.1 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;route Null0 10.18.254.0 255.255.255.0 1
+&lt;/span&gt;&lt;/span&gt;&lt;span class="line"&gt;&lt;span class="cl"&gt;route inside_transit 0.0.0.0 0.0.0.0 10.18.1.1 tunneled
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;After implementing the necessary measures, including adding &lt;code&gt;route Null0 10.18.254.0 255.255.255.0 1&lt;/code&gt; and shutting down the interface, we were able to resolve the Slack connectivity issue. This successful resolution brought a sense of relief, and we could see that the traffic was flowing smoothly.&lt;/p&gt;
+&lt;p&gt;From Cisco regarding the reason for this version of IOS.&lt;/p&gt;
+&lt;p&gt;When you send traffic to a Null0 interface, it causes the packets destined to the specified network to be dropped. This feature is useful when you configure Remotely Triggered Black Hole (RTBH) for Border Gateway Protocol (BGP). In this situation, if you configure a route to Null0 for the remote access client subnet, it forces the ASA to drop traffic destined to hosts in that subnet if a more specific route (provided by Reverse Route Injection) is not present.&lt;/p&gt;
+&lt;p&gt;The Cisco Article about AnyConnect Routing Loops
+&lt;a class="link" href="https://www.cisco.com/c/en/us/support/docs/security/asa-5500-x-series-next-generation-firewalls/116170-probsol-asa-00.html" target="_blank" rel="noopener"
+&gt;https://www.cisco.com/c/en/us/support/docs/security/asa-5500-x-series-next-generation-firewalls/116170-probsol-asa-00.html&lt;/a&gt;&lt;/p&gt;</description></item></channel></rss>
