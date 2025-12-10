@@ -7,7 +7,7 @@ image: cover.jpg
 categories:
     - Networking
 tags:
-    - Dell-N-Series
+    - Dell
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
 Dell N Series – No Free IP Address To Offer In Pool

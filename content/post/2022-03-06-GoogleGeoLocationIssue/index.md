@@ -11,6 +11,9 @@ tags:
     - GeoLocations
 weight: 1       # You can add weight to some posts to override the default sorting (date descending)
 ---
+
+# Google Geo Datebase
+
 Google runs its database like ARIN on who owns what IP and sets a location. If you look up an IP owner in ARIN, you’ll see the name, address, and IP location. Google does this as well, but it’s private.
 
 This becomes important when your Google page suddenly shows Belarus. You need to contact Google or ARIN. You’ll know it’s a Google issue if you don’t see this issue in Bing or DuckDuckGo.
