@@ -44,6 +44,19 @@
     object-position: center;
 }
 
+/* Override theme's fixed height rules at medium+ screens */
+@media (min-width: 768px) {
+    .article-list article.has-image .article-image img {
+        height: 100% !important;
+    }
+}
+
+@media (min-width: 1280px) {
+    .article-list article.has-image .article-image img {
+        height: 100% !important;
+    }
+}
+
 @media (max-width: 768px) {
     .article-list article.has-image .article-image {
         max-height: clamp(150px, 80vw, 250px) !important;
