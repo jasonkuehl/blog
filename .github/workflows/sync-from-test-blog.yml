@@ -47,13 +47,27 @@ jobs:
             --exclude 'sync-to-blog.yml' \
             test-blog/.github/workflows/ blog/.github/workflows/
 
+          # Hugo theme starter assets and static template files.
+          rsync -av --delete test-blog/assets/ blog/assets/
+          rsync -av --delete test-blog/static/ blog/static/
+
           rsync -av --delete test-blog/layouts/ blog/layouts/
 
           cp test-blog/go.mod blog/go.mod
           cp test-blog/go.sum blog/go.sum
 
-          cp test-blog/config/_default/module.toml blog/config/_default/module.toml
-          cp test-blog/config/_default/params.toml blog/config/_default/params.toml
+          # Sync template config files but keep site-specific config.toml in blog.
+          rsync -av --delete \
+            --exclude 'config.toml' \
+            test-blog/config/_default/ blog/config/_default/
+
+      - name: Safety check (content must not change)
+        run: |
+          if git -C blog diff --name-only | grep -q '^content/'; then
+            echo "Error: content/ changes detected. Aborting sync to protect blog posts."
+            git -C blog diff --name-only | grep '^content/' || true
+            exit 1
+          fi
 
       - name: Create pull request in blog
         uses: peter-evans/create-pull-request@v7
@@ -71,7 +85,12 @@ jobs:
 
             Synced paths:
             - `.github/workflows/` (excluding sync workflows)
+            - `assets/`
+            - `static/`
             - `layouts/`
             - `go.mod` and `go.sum`
-            - `config/_default/module.toml`
-            - `config/_default/params.toml`
+            - `config/_default/` (excluding `config.toml`)
+
+            Not synced:
+            - `content/` (blog posts/pages remain blog-specific)
+            - `config/_default/config.toml` (site identity and URL stay blog-specific)
