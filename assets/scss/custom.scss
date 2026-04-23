@@ -7,8 +7,8 @@
    Use fixed frames + centered crop so mixed source ratios look consistent.
 */
 .article-list article.has-image .article-image {
-    aspect-ratio: 21 / 9;
-    max-height: clamp(170px, 24vw, 280px);
+    aspect-ratio: 21 / 9 !important;
+    max-height: clamp(170px, 24vw, 280px) !important;
     overflow: hidden;
     position: relative;
     background: var(--card-background);
@@ -29,8 +29,8 @@
 }
 
 .main-article.has-image .article-image {
-    aspect-ratio: 16 / 9;
-    max-height: 56vh;
+    aspect-ratio: 16 / 9 !important;
+    max-height: 56vh !important;
     overflow: hidden;
     position: relative;
     background: var(--card-background);
@@ -45,9 +45,11 @@
 }
 
 @media (max-width: 768px) {
-    .article-list article.has-image .article-image,
+    .article-list article.has-image .article-image {
+        max-height: clamp(150px, 80vw, 250px) !important;
+    }
+
     .main-article.has-image .article-image {
-        aspect-ratio: 4 / 3;
-        max-height: none;
+        max-height: 40vh !important;
     }
 }
