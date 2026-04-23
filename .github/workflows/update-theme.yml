@@ -32,7 +32,16 @@ jobs:
       - name: Tidy go.mod, go.sum
         run: hugo mod tidy
 
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
         with:
-          commit_message: "CI: Update theme"
+          token: ${{ github.token }}
+          commit-message: "chore: update Hugo theme"
+          branch: chore/update-hugo-theme
+          delete-branch: true
+          title: "chore: update Hugo theme"
+          body: |
+            Automated theme update from the `update-theme` workflow.
+
+            - Updated `github.com/CaiJimmy/hugo-theme-stack/v3`
+            - Ran `hugo mod tidy`
