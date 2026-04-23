@@ -31,8 +31,10 @@
 }
 
 .main-article.has-image .article-image {
+    width: 100% !important;
     aspect-ratio: 16 / 9 !important;
-    max-height: 56vh !important;
+    max-height: none !important;
+    height: auto !important;
     overflow: hidden;
     position: relative;
     background: var(--card-background);
@@ -56,15 +58,5 @@
 @media (min-width: 1280px) {
     .article-list article.has-image .article-image img {
         height: 100% !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .article-list article.has-image .article-image {
-        max-height: clamp(150px, 80vw, 250px) !important;
-    }
-
-    .main-article.has-image .article-image {
-        max-height: 40vh !important;
     }
 }
