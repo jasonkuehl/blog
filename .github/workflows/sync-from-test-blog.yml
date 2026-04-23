@@ -5,7 +5,7 @@ on:
       source_ref:
         description: "Branch or tag from jasonkuehl/test-blog to sync"
         required: false
-        default: "main"
+        default: "master"
 
 jobs:
   sync:
@@ -21,9 +21,21 @@ jobs:
         with:
           path: blog
 
+      - name: Resolve source ref
+        id: source
+        env:
+          INPUT_SOURCE_REF: ${{ github.event.inputs.source_ref }}
+        run: |
+          if [ -n "$INPUT_SOURCE_REF" ]; then
+            echo "ref=$INPUT_SOURCE_REF" >> "$GITHUB_OUTPUT"
+          else
+            DEFAULT_BRANCH=$(git ls-remote --symref https://github.com/jasonkuehl/test-blog.git HEAD | awk '/^ref:/ {sub("refs/heads/", "", $2); print $2; exit}')
+            echo "ref=${DEFAULT_BRANCH:-master}" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Clone test-blog (public HTTPS clone)
         env:
-          SOURCE_REF: ${{ github.event.inputs.source_ref || 'main' }}
+          SOURCE_REF: ${{ steps.source.outputs.ref }}
         run: |
           git clone --depth 1 --branch "$SOURCE_REF" https://github.com/jasonkuehl/test-blog.git test-blog
 
@@ -55,7 +67,7 @@ jobs:
           body: |
             Manual sync of template changes from [jasonkuehl/test-blog](https://github.com/jasonkuehl/test-blog).
 
-            Source ref: `${{ github.event.inputs.source_ref || 'main' }}`
+            Source ref: `${{ steps.source.outputs.ref }}`
 
             Synced paths:
             - `.github/workflows/` (excluding sync workflows)
