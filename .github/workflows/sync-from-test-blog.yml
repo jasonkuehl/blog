@@ -1,0 +1,65 @@
+name: Sync from test-blog
+on:
+  workflow_dispatch:
+    inputs:
+      source_ref:
+        description: "Branch or tag from jasonkuehl/test-blog to sync"
+        required: false
+        default: "main"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout blog
+        uses: actions/checkout@v4
+        with:
+          path: blog
+
+      - name: Clone test-blog (public HTTPS clone)
+        env:
+          SOURCE_REF: ${{ github.event.inputs.source_ref || 'main' }}
+        run: |
+          git clone --depth 1 --branch "$SOURCE_REF" https://github.com/jasonkuehl/test-blog.git test-blog
+
+      - name: Sync template files from test-blog
+        run: |
+          # Keep this workflow file in blog even when syncing workflow directory.
+          rsync -av --delete \
+            --exclude 'sync-from-test-blog.yml' \
+            --exclude 'sync-to-blog.yml' \
+            test-blog/.github/workflows/ blog/.github/workflows/
+
+          rsync -av --delete test-blog/layouts/ blog/layouts/
+
+          cp test-blog/go.mod blog/go.mod
+          cp test-blog/go.sum blog/go.sum
+
+          cp test-blog/config/_default/module.toml blog/config/_default/module.toml
+          cp test-blog/config/_default/params.toml blog/config/_default/params.toml
+
+      - name: Create pull request in blog
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ github.token }}
+          path: blog
+          commit-message: "sync: apply template changes from test-blog"
+          branch: sync/template-changes
+          delete-branch: true
+          title: "Sync template changes from test-blog"
+          body: |
+            Manual sync of template changes from [jasonkuehl/test-blog](https://github.com/jasonkuehl/test-blog).
+
+            Source ref: `${{ github.event.inputs.source_ref || 'main' }}`
+
+            Synced paths:
+            - `.github/workflows/` (excluding sync workflows)
+            - `layouts/`
+            - `go.mod` and `go.sum`
+            - `config/_default/module.toml`
+            - `config/_default/params.toml`
