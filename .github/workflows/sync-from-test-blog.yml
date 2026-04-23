@@ -69,7 +69,19 @@ jobs:
             exit 1
           fi
 
+      - name: Detect synced changes
+        id: changes
+        run: |
+          if [ -n "$(git -C blog status --porcelain)" ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create pull request in blog
+        id: create_pr
+        if: steps.changes.outputs.has_changes == 'true'
+        continue-on-error: true
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ github.token }}
@@ -94,3 +106,19 @@ jobs:
             Not synced:
             - `content/` (blog posts/pages remain blog-specific)
             - `config/_default/config.toml` (site identity and URL stay blog-specific)
+
+      - name: Fallback direct commit and push
+        if: steps.changes.outputs.has_changes == 'true' && steps.create_pr.outcome == 'failure'
+        env:
+          TARGET_BRANCH: ${{ github.ref_name }}
+        run: |
+          git -C blog config user.name "github-actions[bot]"
+          git -C blog config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git -C blog add -A
+          git -C blog commit -m "sync: apply template changes from test-blog"
+          git -C blog push origin HEAD:"$TARGET_BRANCH"
+
+      - name: No changes to sync
+        if: steps.changes.outputs.has_changes == 'false'
+        run: echo "No template changes detected between test-blog and blog."
