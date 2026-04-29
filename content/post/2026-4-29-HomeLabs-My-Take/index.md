@@ -2,7 +2,7 @@
 title: Why I Run a Home Lab (And Why You Might Want To)
 description: Why I Run a Home Lab (And Why You Might Want To)
 slug: Why I Run a Home Lab (And Why You Might Want To)
-date: 2026-4-29
+date: 2026-04-29
 image: cover.svg
 categories:
     - Blog
