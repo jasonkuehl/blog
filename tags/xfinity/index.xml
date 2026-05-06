@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Xfinity on Jason Kuehl Blog</title><link>https://blog.jasonkuehl.com/tags/xfinity/</link><description>Recent content in Xfinity on Jason Kuehl Blog</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Wed, 13 Aug 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://blog.jasonkuehl.com/tags/xfinity/index.xml" rel="self" type="application/rss+xml"/><item><title>Stop Using ISP Provided DNS</title><link>https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/</link><pubDate>Wed, 13 Aug 2025 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/isp-provided-dns-is-filtering-you-cant-control/cover.jpg" alt="Featured image of post Stop Using ISP Provided DNS" /&gt;&lt;p&gt;ISP URL Filtering and Blocking&lt;/p&gt;
+&lt;p&gt;Most, if not all, ISPs offer URL-based protections. These are mostly automated systems that decide if a site is malicious or not. To name just a few&lt;/p&gt;
+&lt;p&gt;Xfinity xFi Advanced Security
+Comcast Xfinity xFi Advanced Security
+Comcast Business SecurityEdge
+Cox Advanced Security
+spectrum Site Shield
+ATT Smart Home
+Tmobile Web Guard&lt;/p&gt;
+&lt;p&gt;The major issue with most of these systems is their automated nature in identifying what is, in quotes, “Bad.” See my post here about Xfinity blocking my Corp VPN Several times over the years and never getting a reason why. Recently, I assisted a friend with transferring his online store from Squarespace to Shopify, and users on the spectrum received a message about a suspicious site being blocked. There was no reason as to why, or what category, just blocked.&lt;/p&gt;
+&lt;p&gt;Check out this site at &lt;a class="link" href="https://rocketprops.store/" target="_blank" rel="noopener"
+&gt;https://rocketprops.store/&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Now, what is the solution? Most of these companies have a procedure to remove the block, but that can take up to one week. Its a really shiity process and unless you’re technically enough, you might not know what to do as an owner of a website or other service that get blocked by an ISP like this. And, they dont need to remove it.&lt;/p&gt;
+&lt;p&gt;Knowing what you know about this, what can you do? Well, you have 3 total options: paid service, a non-paid service that targeted, and build something yourself.&lt;/p&gt;
+&lt;p&gt;Paid Options&lt;/p&gt;
+&lt;p&gt;&lt;a class="link" href="https://meetcircle.com/" target="_blank" rel="noopener"
+&gt;https://meetcircle.com/&lt;/a&gt;
+&lt;a class="link" href="https://nextdns.io/" target="_blank" rel="noopener"
+&gt;https://nextdns.io/&lt;/a&gt;
+&lt;a class="link" href="https://controld.com/plans?step=plans" target="_blank" rel="noopener"
+&gt;https://controld.com/plans?step=plans&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Free Targeted filtering options
+&lt;a class="link" href="https://signup.opendns.com/homefree/" target="_blank" rel="noopener"
+&gt;https://signup.opendns.com/homefree/&lt;/a&gt;
+Quad9 for malicious domain blocking&lt;/p&gt;
+&lt;p&gt;.cloudflare.com/introducing-1-1-1-1-for-families/
+&lt;a class="link" href="https://one.one.one.one/family/" target="_blank" rel="noopener"
+&gt;https://one.one.one.one/family/&lt;/a&gt;
+Malware Blocking Only
+Primary DNS: 1.1.1.2
+Secondary DNS: 1.0.0.2
+Malware and Adult Content
+Primary DNS: 1.1.1.3
+Secondary DNS: 1.0.0.3
+These are self-hosted services that you can run to give you that control, but they are more advanced to set up and maintain, and you’re the maintainer.&lt;/p&gt;
+&lt;p&gt;Pihole
+AdGuard&lt;/p&gt;</description></item><item><title>Xfinity Blocking URLs For No Reason</title><link>https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/</link><pubDate>Wed, 31 Jan 2024 00:00:00 +0000</pubDate><guid>https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/</guid><description>&lt;img src="https://blog.jasonkuehl.com/p/xfinity-blocking-urls-for-no-reason/cover.jpg" alt="Featured image of post Xfinity Blocking URLs For No Reason" /&gt;&lt;h1 id="xfinty-url-filtering-"&gt;Xfinty URL Filtering &amp;gt;:(
+&lt;/h1&gt;&lt;p&gt;There have been a few instances in which Xfinity has blocked my company’s VPN URL. Xfinity needs a better process for unblocking that URL, but that is a different rant. You can not open tickets with them if you’re not an Xfinity customer. This makes no sense, and it’s infuriating. Xfinity will not tell us why or how the block was triggered. We were told on the 1st and 2nd time it happened it was “a known issue,” and it was resolved, but we’ve had other issues.&lt;/p&gt;
+&lt;p&gt;Suppose you find yourself googling and end up here. Here is what we did to fix this and what to look for.&lt;/p&gt;
+&lt;p&gt;It all started when some users couldn’t connect to the VPN. After some troubleshooting, we discovered that it was only affecting Xfinity users. Upon further investigation, we found that all Xfinity users had Xfinity advanced security enabled, blocking our VPN URL under the “blocked” tab. Even when a user removed the block, it would reappear in the block list after an hour. We had to request users to remove the block and disable Xfinity advanced security entirely to resolve the issue.&lt;/p&gt;
+&lt;p&gt;The next time we happened, Xfinity pushed an update that re-enabled Xfinity’s advanced security; however, users didn’t see our URL blocked. Xfinity told our users it was blocked. You’ll need to use this site &lt;a class="link" href="https://spa.xfinity.com/advanced-security?faq=advanced-security" target="_blank" rel="noopener"
+&gt;https://spa.xfinity.com/advanced-security?faq=advanced-security&lt;/a&gt; to request the URL block is removed. It says 3-4 business days. It won’t matter how much you call, complain, or reps you talk to. The process is terrible, and Xfinity will not allow you to speak with an engineer. You’re stuck with tech support Tier 1 and 2 only. Who can only update the tickets on the SPA side.&lt;/p&gt;
+&lt;p&gt;Xfinity will not tell us why this happened, so we took measures and made backup plans.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;The Xfinity block blocked the entire TLD, not just the subdomain we found in some instances. We made a backup VPN URL under a different TLD to allow our users to connect. If we used a VPN.jasonkuehl.com, we made vpn.jasonkuehl.blah. This was a massive solution for us, allowing all blocked Xfinity users to connect.
+We made documentation to show users how to unblock our URL from the Xfinity app and how to turn off Xfinity’s advanced security.
+We request that users open tickets with Xfinity and provide them to us.
+I sent in a SPA request to unblock the URL.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;If you found this frustrating and wanted to smash things, I did, too. The problem is this is 100% out of your control. If you were ever affected by Xfinity, create the backup VPN URL. It will allow all your users to connect and work.&lt;/p&gt;
+&lt;p&gt;Technical details.&lt;/p&gt;
+&lt;p&gt;If you try to hit the URL, you’ll see this. It makes you think that your SSL might be messed up or broken. But if you check on other ISPs, fine.&lt;/p&gt;
+&lt;p&gt;It works fine if you hit your VPN without the cert and do it directly to the IP. But using the URL will fail, not connect, and can’t hit the destination.&lt;/p&gt;</description></item></channel></rss>
