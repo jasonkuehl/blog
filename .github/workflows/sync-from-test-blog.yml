@@ -56,6 +56,11 @@ jobs:
           cp test-blog/go.mod blog/go.mod
           cp test-blog/go.sum blog/go.sum
 
+          # nginx image build files
+          cp test-blog/Dockerfile blog/Dockerfile
+          cp test-blog/nginx.conf blog/nginx.conf
+          cp test-blog/.dockerignore blog/.dockerignore
+
           # Sync template config files but keep site-specific config.toml in blog.
           rsync -av --delete \
             --exclude 'config.toml' \
@@ -109,6 +114,7 @@ jobs:
           - \`static/\`
           - \`layouts/\`
           - \`go.mod\` and \`go.sum\`
+          - \`Dockerfile\`, \`nginx.conf\` and \`.dockerignore\`
           - \`config/_default/\` (excluding \`config.toml\`)
 
           Not synced:
