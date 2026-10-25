@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       source_ref:
-        description: "Branch or tag from jasonkuehl/test-blog to sync"
+        description: "Branch or tag from invader/test-blog to sync"
         required: false
         default: "master"
 
@@ -29,7 +29,7 @@ jobs:
           if [ -n "$INPUT_SOURCE_REF" ]; then
             echo "ref=$INPUT_SOURCE_REF" >> "$GITHUB_OUTPUT"
           else
-            DEFAULT_BRANCH=$(git ls-remote --symref https://github.com/jasonkuehl/test-blog.git HEAD | awk '/^ref:/ {sub("refs/heads/", "", $2); print $2; exit}')
+            DEFAULT_BRANCH=$(git ls-remote --symref ${{ github.server_url }}/invader/test-blog.git HEAD | awk '/^ref:/ {sub("refs/heads/", "", $2); print $2; exit}')
             echo "ref=${DEFAULT_BRANCH:-master}" >> "$GITHUB_OUTPUT"
           fi
 
@@ -37,7 +37,7 @@ jobs:
         env:
           SOURCE_REF: ${{ steps.source.outputs.ref }}
         run: |
-          git clone --depth 1 --branch "$SOURCE_REF" https://github.com/jasonkuehl/test-blog.git test-blog
+          git clone --depth 1 --branch "$SOURCE_REF" ${{ github.server_url }}/invader/test-blog.git test-blog
 
       - name: Sync template files from test-blog
         run: |
@@ -78,46 +78,58 @@ jobs:
             echo "has_changes=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Commit synced changes
+        if: steps.changes.outputs.has_changes == 'true'
+        run: |
+          git -C blog config user.name "gitea-actions[bot]"
+          git -C blog config user.email "gitea-actions[bot]@git.yolo.fail"
+          git -C blog switch -c sync/template-changes
+          git -C blog add -A
+          git -C blog commit -m "sync: apply template changes from test-blog"
+
       - name: Create pull request in blog
         id: create_pr
         if: steps.changes.outputs.has_changes == 'true'
         continue-on-error: true
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ github.token }}
-          path: blog
-          commit-message: "sync: apply template changes from test-blog"
-          branch: sync/template-changes
-          delete-branch: true
-          title: "Sync template changes from test-blog"
-          body: |
-            Manual sync of template changes from [jasonkuehl/test-blog](https://github.com/jasonkuehl/test-blog).
+        env:
+          TOKEN: ${{ github.token }}
+          BASE: ${{ github.ref_name }}
+          SOURCE_REF: ${{ steps.source.outputs.ref }}
+        run: |
+          git -C blog push --force origin sync/template-changes
 
-            Source ref: `${{ steps.source.outputs.ref }}`
+          BODY=$(cat <<MD
+          Manual sync of template changes from [invader/test-blog](${{ github.server_url }}/invader/test-blog).
 
-            Synced paths:
-            - `.github/workflows/` (excluding sync workflows)
-            - `assets/`
-            - `static/`
-            - `layouts/`
-            - `go.mod` and `go.sum`
-            - `config/_default/` (excluding `config.toml`)
+          Source ref: \`$SOURCE_REF\`
 
-            Not synced:
-            - `content/` (blog posts/pages remain blog-specific)
-            - `config/_default/config.toml` (site identity and URL stay blog-specific)
+          Synced paths:
+          - \`.github/workflows/\` (excluding sync workflows)
+          - \`assets/\`
+          - \`static/\`
+          - \`layouts/\`
+          - \`go.mod\` and \`go.sum\`
+          - \`config/_default/\` (excluding \`config.toml\`)
 
-      - name: Fallback direct commit and push
+          Not synced:
+          - \`content/\` (blog posts/pages remain blog-specific)
+          - \`config/_default/config.toml\` (site identity and URL stay blog-specific)
+          MD
+          )
+
+          # Gitea returns 409 when an open PR already exists for this branch; the force-push above updated it
+          STATUS=$(jq -n --arg base "$BASE" --arg body "$BODY" \
+              '{head: "sync/template-changes", base: $base, title: "Sync template changes from test-blog", body: $body}' |
+            curl -sS -o /dev/null -w '%{http_code}' -X POST "${{ github.api_url }}/repos/${{ github.repository }}/pulls" \
+              -H "Authorization: token $TOKEN" -H "Content-Type: application/json" -d @-)
+          echo "Create PR returned HTTP $STATUS"
+          [ "$STATUS" = 201 ] || [ "$STATUS" = 409 ]
+
+      - name: Fallback direct push
         if: steps.changes.outputs.has_changes == 'true' && steps.create_pr.outcome == 'failure'
         env:
           TARGET_BRANCH: ${{ github.ref_name }}
-        run: |
-          git -C blog config user.name "github-actions[bot]"
-          git -C blog config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git -C blog add -A
-          git -C blog commit -m "sync: apply template changes from test-blog"
-          git -C blog push origin HEAD:"$TARGET_BRANCH"
+        run: git -C blog push origin HEAD:"$TARGET_BRANCH"
 
       - name: No changes to sync
         if: steps.changes.outputs.has_changes == 'false'
